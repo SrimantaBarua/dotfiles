@@ -2,17 +2,56 @@
 
 
 import os
+from subprocess import Popen, PIPE
+
+
+# Print error message and quit
+def printerr(msg, indent=0):
+    print("{}\x1b[1;31mERROR:\x1b[0m {}".format(" " * indent, msg))
+    quit()
 
 
 # Recursively create directories for `path`
-def mkdir(path):
-    pass
+def mkdir(path, indent=0):
+    cmd = "mkdir -p {}".format(path)
+    try:
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        _, stderr = p.communicate()
+        if p.returncode != 0:
+            printerr("mkdir {}: {}".format(path, stderr), indent)
+    except Exception as e:
+        printerr("mkdir {}: {}".format(path, e), indent)
 
 
 # Creates a symlink at `link` pointing to `orig`, deleting any prior
 # file/directory/link formerly at `link`
-def symlink(orig, link):
-    pass
+def symlink(orig, link, indent=0):
+    cmd = "rm -rf {} ; ".format(link)
+    cmd += "ln -sf {} {}".format(orig, link)
+    try:
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        _, stderr = p.communicate()
+        if p.returncode != 0:
+            printerr("symlink {} -> {}: {}".format(link, orig, stderr), indent)
+    except Exception as e:
+        printerr("symlink {} -> {}: {}".format(link, orig, e), indent)
+
+
+# Clone a git repository into `path`
+def git_clone(repo, path, indent=0):
+    cmd = "rm -rf {} ; git clone {} {}".format(path, repo, path)
+    try:
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        _, stderr = p.communicate()
+        if p.returncode != 0:
+            printerr("git clone {}: {}".format(repo, stderr), indent)
+    except Exception as e:
+        printerr("git clone {}: {}".format(repo, e), indent)
+
+
+# Print a "todo" message for user action
+def todomsg(msg):
+    print("\x1b[1;31mTODO: \x1b[1;33m{}\x1b[0m".format(msg))
 
 
 # Parses configuration files and returns list of commands to run
@@ -62,7 +101,7 @@ def include_cfg(path):
                     continue
     except Exception as e:
         print("Failed to parse config file: {}: {}".format(path, e))
-        quit(1)
+        quit()
     return cmds
 
 
@@ -80,9 +119,35 @@ def print_cmds(cmds, indent=0):
             print("{}{} {}".format(" " * indent, cmd[0], cmd[1]))
 
 
-if __name__ == "__main__":
-    # Get path to this file
-    root_path = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
-    # Parse root __cfg__
-    cmds = include_cfg(os.path.join(root_path, "__cfg__"))
-    print_cmds(cmds)
+# Run commands
+def run_cmds(cmds, indent=2):
+    todos = []
+    for cmd in cmds:
+        if cmd[0] == "INCLUDE":
+            print("{}* \x1b[1mSetup {}...\x1b[0m".format(" " * indent, cmd[1]))
+            todos_here = run_cmds(cmd[2], indent + 2)
+            todos += todos_here
+        elif cmd[0] == "SYMLINK":
+            print("{}* Symlink {} -> {}".format(" " * indent, cmd[2], cmd[1]))
+            symlink(cmd[1], cmd[2])
+        elif cmd[0] == "GIT_CLONE":
+            print("{}* Clone {} -> {}".format(" " * indent, cmd[1], cmd[2]))
+            git_clone(cmd[1], cmd[2])
+        elif cmd[0] == "MKDIR":
+            print("{}* Mkdir {}".format(" " * indent, cmd[1]))
+            mkdir(cmd[1])
+        elif cmd[0] == "TODOMSG":
+            todos.append(cmd[1])
+    print("{}* \x1b[32mDone\x1b[0m".format(" " * indent))
+    return todos
+
+
+# Get path to this file
+root_path = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+# Parse root __cfg__
+cmds = include_cfg(os.path.join(root_path, "__cfg__"))
+
+print("\x1b[1m* Run commands...\x1b[0m")
+todos = run_cmds(cmds)
+for todo in todos:
+    todomsg(todo)
