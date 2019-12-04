@@ -1,0 +1,4 @@
+MKDIR ~/.local/share
+SYMLINK fonts , ~/.local/share/fonts
+
+TODOMSG Run "pip install -U --user <X>" for each package <X> in pip/requirements.txt

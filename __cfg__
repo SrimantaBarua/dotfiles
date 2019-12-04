@@ -1,0 +1,6 @@
+INCLUDE apps
+# INCLUDE gentoo
+# INCLUDE system
+INCLUDE user_data
+
+TODOMSG Use Linux kernel config to build kernel

@@ -1,0 +1,3 @@
+SYMLINK bashrc       , ~/.bashrc
+SYMLINK bash_profile , ~/.bash_profile
+SYMLINK bash_logout  , ~/.bash_logout

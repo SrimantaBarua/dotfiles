@@ -1,0 +1,3 @@
+MKDIR ~/.tmux/themes
+GIT_CLONE https://github.com/srcery-colors/srcery-tmux , ~/.tmux/themes/srcery-tmux
+SYMLINK tmux.conf , ~/.tmux.conf

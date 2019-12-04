@@ -1,0 +1,2 @@
+MKDIR ~/.config
+SYMLINK transmission-daemon , ~/.config/transmission-daemon

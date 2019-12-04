@@ -1,0 +1,2 @@
+MKDIR ~/.config
+SYMLINK kitty , ~/.config/kitty

@@ -1,0 +1,167 @@
+# export EDITOR=nvim
+export EDITOR="nvim"
+# export VISUAL="emacsclient -c -a emacs"
+# export BROWSER=google-chrome-stable
+export BROWSER=firefox
+# Stop ranger loading default config files
+export RANGER_LOAD_DEFAULT_RC=FALSE
+
+# History file
+HISTFILE=~/.histfile
+HISTSIZE=1000
+SAVEHIST=1000
+
+# PATH
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.scripts:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/Documents/zig/build:$PATH"
+
+# Prompt
+PS1='%B%F{yellow}%n%f %F{blue}%2~%f%b '
+
+# Rust
+export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src/"
+
+
+# Autocompletion
+zstyle :compinstall filename '/home/barua/.zshrc'
+autoload -Uz compinit
+compinit
+# Syntax highlighting
+source /usr/share/zsh/site-contrib/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Searching history
+bindkey "" history-incremental-pattern-search-backward
+# enable vim mode
+bindkey -v
+
+
+# Aliases
+alias ec="emacsclient -c -a emacs"
+alias ls='ls --color=auto'
+alias rm='rm -i'
+alias l=exa
+alias tree='tree -C'
+
+
+# Fzf configuration
+export FZF_DEFAULT_OPTS='--color bg:-1,fg:-1,hl:#96aa30,bg+:#20252A,fg+:#ffffff,hl+:#F29718,info:#768B90,prompt:#F07178 -m'
+export FZF_DEFAULT_COMMAND='rg --files'
+
+
+# Custom functions
+
+# Tmux shorthand
+t-ls() {
+    tmux list-sessions
+}
+
+t-at() {
+    tmux attach -t "$1"
+}
+
+
+# Transmission
+tsm-daemon() {
+    transmission-daemon &
+}
+
+tsm-clear-completed() {
+    transmission-remote -l | grep "100%" | grep Done | awk '{print $1}' | xargs -n 1 -I % transmission-remote -t % -r
+}
+
+tsm() {
+    transmission-remote -l
+}
+
+tsm-add() {
+    transmission-remote -a "$1"
+}
+
+tsm-pause() {
+    transmission-remote -t"$1" --stop
+}
+
+tsm-start() {
+    transmission-remote -t"$1" --start
+}
+
+tsm-purge() {
+    transmission-remote -t"$1" --remove-and-delete
+}
+
+tsm-remove() {
+    transmission-remote -t"$1" -r
+}
+
+tsm-info() {
+    transmission-remote -t"$1" -i ;
+}
+
+
+# fzf-based
+fz-pic() {
+    pic="$(find ~/Pictures/ -type f | fzf --header='[open:pictures]')"
+    if [ "x$pic" != "x" ]; then
+        feh "$pic"
+    fi
+}
+
+fz-ed() {
+    file="$(find ~/ -type f | fzf --header='[open:files:user]')"
+    if [ "x$file" != "x" ]; then
+        $EDITOR "$file"
+    fi
+    $EDITOR 
+}
+
+fz-r-ed() {
+    file="$(find / -type f 2>/dev/null | fzf --header='[open:files:root]')"
+    if [ "x$file" != "x" ]; then
+        $EDITOR "$file"
+    fi
+}
+
+fz-vid() {
+    vid="$(find ~/Videos/ -type f | fzf --header='[open:videos]')"
+    if [ "x$vid" != "x" ]; then
+        mpv "$vid"
+    fi
+}
+
+fz-pac-S() {
+    pac="$(pacman -Sl | fzf --header='[packages:install]' | awk '{print $2}')"
+    if [ "x$pac" != "x" ]; then
+        sudo pacman -S --noconfirm $pac
+    fi
+}
+
+fz-pac-R() {
+    pac="$(pacman -Q | fzf --header='[packages:remove]' | awk '{print $2}')"
+    if [ "x$pac" != "x" ]; then
+        sudo pacman -R --noconfirm $pac
+    fi
+}
+
+fz-kp() {
+    proc="$(ps -ef | sed 1d | fzf --header='[kill:process]' | awk '{print $2}')"
+    if [ "x$proc" != "x" ]; then
+        echo $proc | xargs kill -${1:-9}
+    fi
+}
+
+fz-bt() {
+    echo 'power on' | bluetoothctl
+    dev="$(echo 'paired-devices' | bluetoothctl | grep '^Device' | cut -d ' ' -f 2- | fzf --header='[bluetooth:connect]' | cut -d ' '  -f 1)"
+    if [ "x$dev" != "x" ]; then
+        echo "connect $dev" | bluetoothctl
+    fi
+}
+
+
+# Misc
+cpbak() {
+    cp $1 $1".bak"
+}
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

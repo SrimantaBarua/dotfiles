@@ -1,0 +1,12 @@
+{
+    "languageserver":
+    {
+        "clangd":
+        {
+          "command": "clangd",
+          "filetypes": ["c", "cpp", "objc", "objcpp"],
+          "args": ["--background-index"],
+          "rootPatterns": ["compile_flags.txt", "compile_commands.json", ".vim/", ".git/", ".hg/"]
+        }
+    }
+}

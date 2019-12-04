@@ -1,0 +1,3 @@
+MKDIR ~/.config
+SYMLINK gtk-3.0 , ~/.config/gtk-3.0
+SYMLINK gtk-4.0 , ~/.config/gtk-4.0

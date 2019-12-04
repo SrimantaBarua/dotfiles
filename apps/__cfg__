@@ -1,0 +1,12 @@
+INCLUDE bash
+INCLUDE emacs
+INCLUDE fontconfig
+INCLUDE gdb
+INCLUDE git
+INCLUDE gtk
+INCLUDE kitty
+INCLUDE nvim
+INCLUDE redshift
+INCLUDE tmux
+INCLUDE transmission
+INCLUDE zsh

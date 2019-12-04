@@ -1,0 +1,2 @@
+SYMLINK gdbinit        , ~/.gdbinit
+SYMLINK gdbinit-gef.py , ~/.gdbinit-gef.py
