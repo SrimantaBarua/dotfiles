@@ -1,4 +1,1 @@
-GIT_CLONE https://github.com/hlissner/doom-emacs , ~/.emacs.d
-SYMLINK doom.d , ~/.doom.d
-
-TODOMSG Run "~/.emacs.d/bin/doom install"
+SYMLINK emacs.d , ~/.emacs.d

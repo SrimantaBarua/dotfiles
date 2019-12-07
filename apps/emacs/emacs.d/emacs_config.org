@@ -1,0 +1,372 @@
+#+TITLE: Emacs configuration
+#+AUTHOR: Srimanta Barua
+
+* Table of contents
+** [[Starting up][Starting up]]
+*** [[Set sane defaults][Sane defaults]]
+*** [[Load non-version-controlled files][Non-VC vars]]
+** [[UI Configuration][UI]]
+*** [[Configure Emacs theme][Theme]]
+** [[UX Configuration][UX]]
+*** [[Smooth Scrolling][Smooth scrolling]]
+*** [[Relative line numbering][Relative line numbering]]
+*** [[evil mode][evil mode]]
+*** [[which-key to know what to press next][which-key]]
+*** [[ivy, counsel, and swiper][ivy, counsel, and swiper]]
+** [[Version control][Version control]]
+*** [[Disable built-in VC][Disable Emacs' built-in version control]]
+*** [[Use Magit for git][Magit for git]]
+** [[Programming][Programming]]
+*** [[Autocompletion with company][Autocompletion]]
+*** [[Syntax checking with Flycheck][Syntax checking]]
+*** [[Snippets with Yasnippet][Snippets]]
+*** [[Project management with Projectile][Projectile]]
+*** [[Language server protocol][Language server protocol]]
+*** [[Languages][Languages]]
+**** [[C][C]]
+**** [[Rust][Rust]]
+**** [[Python][Python]]
+**** [[CMake][CMake]]
+
+* Starting up
+** Set sane defaults
+
+I live in an UTF-8 world
+
+#+BEGIN_SRC emacs-lisp
+  (prefer-coding-system 'utf-8)
+  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+#+END_SRC
+
+Emacs saves backup files which end with '~' and clutter up directories. Set up a dedicated backup
+directory for these files
+
+#+BEGIN_SRC emacs-lisp
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+#+END_SRC
+
+** Load non-version-controlled files
+
+=.custom.el= stores options from the built-in customization interface for Emacs
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default custom-file (expand-file-name ".custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+#+END_SRC
+
+I use =secrets.el= to store variables I don't want to put on GitHub
+
+#+BEGIN_SRC emacs-lisp
+  (let ((secrets-file (expand-file-name "secrets.el" user-emacs-directory)))
+    (when (file-exists-p secrets-file)
+      (load secrets-file)))
+#+END_SRC
+
+* UI Configuration
+
+Disable distracting UI elements
+
+#+BEGIN_SRC emacs-lisp
+  (blink-cursor-mode -1)          ;; Disable cursor blinking
+  (scroll-bar-mode -1)            ;; Disable scroll bar
+  (tool-bar-mode -1)              ;; Disable tool bar
+  (menu-bar-mode -1)              ;; Disable menu bar
+  (setq inhibit-startup-screen t)  ;; Disable initial welcome screen
+#+END_SRC
+
+Enable some sensible defaults
+
+#+BEGIN_SRC emacs-lisp
+  (display-time-mode t)           ;; Display time in modeline
+  (column-number-mode t)          ;; Display column number in modeline
+  (global-linum-mode t)           ;; Enable line numbers everywhere
+  (electric-pair-mode t)          ;; Color pairs (parens, brackets etc) when typing
+  (setq-default line-spacing 3)   ;; Set spacing between lines
+#+END_SRC
+
+Configure fonts
+
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'default nil :family "SF Mono" :height 100)
+#+END_SRC
+
+Start Emacs maximized
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+END_SRC
+
+** Configure Emacs theme
+
+The doom-one theme looks good   
+
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :config
+    (setq doom-themes-enable-bold t
+	  doom-themes-enable-italic t)
+    (load-theme 'doom-one t))
+#+END_SRC
+
+* UX Configuration
+** Smooth Scrolling
+   
+By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line
+at a time
+
+#+BEGIN_SRC emacs-lisp
+  (use-package smooth-scrolling
+    :ensure t)
+  (smooth-scrolling-mode t)
+#+END_SRC
+
+** Relative line numbering
+
+In vim, I bind =<leader> r= (i.e. =, r=) to switch to relative line numbering in the current buffer.
+Enable similar functionality for Emacs
+
+#+BEGIN_SRC emacs-lisp
+  (use-package linum-relative
+    :ensure t
+    :config
+    (linum-relative-off)
+    (linum-on))
+#+END_SRC
+
+** evil mode
+    
+Frankly speaking, Vim is a much better text editor than Emacs. We can capture some of that using
+Evil mode in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    ;; Use C-u and C-d for scrolling
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-d-scroll t)
+    :config
+    ;; Enable relative line numbering with ', r'
+    (require 'linum-relative)
+    (define-key evil-normal-state-map (kbd ", r")
+      (lambda ()
+	(interactive)
+	  (linum-relative-toggle)
+	  (linum-on)))
+    ;; Switch to previous buffer with ', ,'
+    (define-key evil-normal-state-map (kbd ", ,") 'evil-switch-to-windows-last-buffer)
+    ;; Enable evil mode
+    (evil-mode t))
+#+END_SRC
+
+** which-key to know what to press next
+
+=which-key= is a helpful plugin which brings up a popup with all the keybindings
+available after the key you've just pressed
+
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-setup-side-window-bottom))
+
+  ;; Enable which-key
+  (which-key-mode)
+#+END_SRC
+
+** ivy, counsel, and swiper
+
+Ivy is a generic completion framework for Emacs
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :ensure t
+    :config
+    (setq ivy-use-virtual-buffers t
+	  enable-recursive-minibuffers t))
+  (ivy-mode t)
+#+END_SRC
+
+Counsel goes one step further to replace standard commands with ones which make best use of ivy
+
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :ensure t)
+  (counsel-mode t)
+#+END_SRC
+
+Enable swiper for searching
+
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper
+    :ensure t
+    :config
+    (global-set-key (kbd "C-s") 'swiper-isearch)
+    (global-set-key (kbd "C-S-s") 'swiper-isearch-thing-at-point))
+#+END_SRC
+
+* Version control
+** Disable Emacs' built-in version control
+   
+#+BEGIN_SRC emacs-lisp
+  (setq vc-handled-backends nil)
+#+END_SRC
+
+** Use Magit for git
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t)
+#+END_SRC
+
+* Programming
+** Autocompletion with company
+
+Company stands for "COMPlete ANYthing", and is an extensible completion framework for Emacs
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    ;; Reduce delay when waiting for completions
+    (setq company-idle-delay 0.1)
+    (setq company-minimum-prefix-length 1)
+    ;; Prevent suggestions from being triggered. Tab always completes current
+    ;; selection, Return will only complete if user has interacted with company
+    (dolist (key '("<return>" "RET"))
+      (define-key company-active-map (kbd key)
+	`(menu-item nil company-complete
+		    :filter ,(lambda (cmd)
+			       (when (company-explicit-action-p)
+				 cmd)))))
+    (define-key company-active-map (kbd "TAB") #'company-complete-selection)
+    (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
+    (define-key company-active-map (kbd "SPC") nil)
+    (setq company-auto-complete-chars nil))
+
+  ;; Enable company-mode globally
+  (global-company-mode)
+#+END_SRC
+
+** Syntax checking with Flycheck
+
+Flycheck is a syntax checker/linter with multiple backends
+
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t)
+#+END_SRC
+
+** Snippets with Yasnippet
+
+Yasnippet is a snippet-expansion plugin
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :config
+    (use-package yasnippet-snippets
+      :ensure t)
+    (yas-reload-all))
+#+END_SRC
+
+** Project management with Projectile
+
+Projectile is a project-management package for Emacs
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (projectile-mode 1)
+#+END_SRC
+
+** Language server protocol
+
+Microsoft's Language Server Protocol allows for asynchronous language-specific actions
+(like completion), using external server processes.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+
+    ;; Use Flycheck instead of Flymake
+    :init (setq lsp-prefer-flymake nil)
+
+    ;; Enable when 'lsp' is run
+    :commands lsp
+
+    :config
+    ;; lsp-ui for showing things like error messages to the side
+    (use-package lsp-ui
+      :ensure t
+      :commands lsp-ui-mode)
+    (lsp-ui-mode)
+
+    ;; company-lsp provides lsp as a company backend
+    (use-package company-lsp
+      :ensure t
+      :commands company-lsp)
+    (push 'company-lsp company-backends))
+#+END_SRC
+
+** Languages
+*** C
+
+C indentation is really messed up in Emacs by default    
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c-mode-hook
+	    (lambda ()
+	      (progn
+		(setq-local c-basic-offset 8)
+		(setq-local c-default-style "linux")
+		(setq-local tab-width 8)
+		(setq-local indent-tabs-mode t)
+		(lsp))))
+#+END_SRC
+
+*** Rust
+
+Rust is not supported out of the box. Install =rust-mode= to enable support
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :ensure t)
+#+END_SRC
+
+On entering Rust mode, enable indentation with 4 spaces, and enable [[Language server protocol][lsp]] support with =rls=
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'rust-mode-hook
+	    (lambda ()
+	      (progn
+		(setq-local indent-tabs-mode nil)
+		(setq-local tab-width 4)
+		(lsp))))
+#+END_SRC
+
+*** Python
+
+On entering Python mode, enable indentation with 4 spaces, and enable [[Language server protocol][lsp]] support with =pyls=
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook
+	    (lambda ()
+	      (progn
+		(setq-local indent-tabs-mode nil
+			    tab-width 4)
+		(lsp))))
+#+END_SRC
+
+*** CMake
+
+CMake is not supported out of the box. Install =cmake-mode= to enable support
+
+#+BEGIN_SRC emacs-lisp
+  (use-package cmake-mode
+    :ensure t)
+#+END_SRC
