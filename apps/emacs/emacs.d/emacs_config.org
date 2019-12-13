@@ -1,42 +1,21 @@
-#+TITLE: Emacs configuration
+#+TILE: Emacs configuration
 #+AUTHOR: Srimanta Barua
 
-* Table of contents
-** [[Starting up][Starting up]]
-*** [[Set sane defaults][Sane defaults]]
-*** [[Load non-version-controlled files][Non-VC vars]]
-** [[UI Configuration][UI]]
-*** [[Configure Emacs theme][Theme]]
-** [[UX Configuration][UX]]
-*** [[Smooth Scrolling][Smooth scrolling]]
-*** [[Relative line numbering][Relative line numbering]]
-*** [[evil mode][evil mode]]
-*** [[which-key to know what to press next][which-key]]
-*** [[ivy, counsel, and swiper][ivy, counsel, and swiper]]
-** [[Version control][Version control]]
-*** [[Disable built-in VC][Disable Emacs' built-in version control]]
-*** [[Use Magit for git][Magit for git]]
-** [[Programming][Programming]]
-*** [[Autocompletion with company][Autocompletion]]
-*** [[Syntax checking with Flycheck][Syntax checking]]
-*** [[Snippets with Yasnippet][Snippets]]
-*** [[Project management with Projectile][Projectile]]
-*** [[Language server protocol][Language server protocol]]
-*** [[Languages][Languages]]
-**** [[C][C]]
-**** [[Rust][Rust]]
-**** [[Python][Python]]
-**** [[CMake][CMake]]
-
 * Starting up
+
 ** Set sane defaults
 
-I live in an UTF-8 world
+*** UTF-8
 
 #+BEGIN_SRC emacs-lisp
   (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 #+END_SRC
+
+*** backup files
 
 Emacs saves backup files which end with '~' and clutter up directories. Set up a dedicated backup
 directory for these files
@@ -45,27 +24,9 @@ directory for these files
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 #+END_SRC
 
-** Load non-version-controlled files
+* UI configuration
 
-=.custom.el= stores options from the built-in customization interface for Emacs
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default custom-file (expand-file-name ".custom.el" user-emacs-directory))
-  (when (file-exists-p custom-file)
-    (load custom-file))
-#+END_SRC
-
-I use =secrets.el= to store variables I don't want to put on GitHub
-
-#+BEGIN_SRC emacs-lisp
-  (let ((secrets-file (expand-file-name "secrets.el" user-emacs-directory)))
-    (when (file-exists-p secrets-file)
-      (load secrets-file)))
-#+END_SRC
-
-* UI Configuration
-
-Disable distracting UI elements
+** Disable distracting UI elements
 
 #+BEGIN_SRC emacs-lisp
   (blink-cursor-mode -1)          ;; Disable cursor blinking
@@ -75,7 +36,7 @@ Disable distracting UI elements
   (setq inhibit-startup-screen t)  ;; Disable initial welcome screen
 #+END_SRC
 
-Enable some sensible defaults
+** Enable some sensible defaults
 
 #+BEGIN_SRC emacs-lisp
   (display-time-mode t)           ;; Display time in modeline
@@ -85,13 +46,15 @@ Enable some sensible defaults
   (setq-default line-spacing 3)   ;; Set spacing between lines
 #+END_SRC
 
-Configure fonts
+** Configure fonts
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "SF Mono" :height 100)
+  (set-face-font 'default "SF Mono-11")
+  (set-face-font 'variable-pitch "Roboto-12")
+  (copy-face 'default 'fixed-pitch)
 #+END_SRC
 
-Start Emacs maximized
+** Start Emacs maximized
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -106,11 +69,12 @@ The doom-one theme looks good
     :ensure t
     :config
     (setq doom-themes-enable-bold t
-	  doom-themes-enable-italic t)
+          doom-themes-enable-italic t)
     (load-theme 'doom-one t))
 #+END_SRC
 
 * UX Configuration
+
 ** Smooth Scrolling
    
 By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line
@@ -133,6 +97,13 @@ Enable similar functionality for Emacs
     :config
     (linum-relative-off)
     (linum-on))
+  (require 'linum-relative)
+
+  ;; Define a function to toggle relative line numbers
+  (defun my/linum-relative-toggle ()
+    (interactive)
+    (linum-relative-toggle)
+    (linum-on))
 #+END_SRC
 
 ** evil mode
@@ -146,19 +117,10 @@ Evil mode in Emacs.
     :init
     ;; Use C-u and C-d for scrolling
     (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-d-scroll t)
-    :config
-    ;; Enable relative line numbering with ', r'
-    (require 'linum-relative)
-    (define-key evil-normal-state-map (kbd ", r")
-      (lambda ()
-	(interactive)
-	  (linum-relative-toggle)
-	  (linum-on)))
-    ;; Switch to previous buffer with ', ,'
-    (define-key evil-normal-state-map (kbd ", ,") 'evil-switch-to-windows-last-buffer)
-    ;; Enable evil mode
-    (evil-mode t))
+    (setq evil-want-C-d-scroll t))
+
+  ;; Enable evil mode
+  (evil-mode t)
 #+END_SRC
 
 ** which-key to know what to press next
@@ -201,13 +163,11 @@ Enable swiper for searching
 
 #+BEGIN_SRC emacs-lisp
   (use-package swiper
-    :ensure t
-    :config
-    (global-set-key (kbd "C-s") 'swiper-isearch)
-    (global-set-key (kbd "C-S-s") 'swiper-isearch-thing-at-point))
+    :ensure t)
 #+END_SRC
 
 * Version control
+
 ** Disable Emacs' built-in version control
    
 #+BEGIN_SRC emacs-lisp
@@ -222,6 +182,7 @@ Enable swiper for searching
 #+END_SRC
 
 * Programming
+
 ** Autocompletion with company
 
 Company stands for "COMPlete ANYthing", and is an extensible completion framework for Emacs
@@ -270,6 +231,9 @@ Yasnippet is a snippet-expansion plugin
     (use-package yasnippet-snippets
       :ensure t)
     (yas-reload-all))
+
+  ;; Enable yasnippet
+  (yas-global-mode t)
 #+END_SRC
 
 ** Project management with Projectile
@@ -314,6 +278,7 @@ Microsoft's Language Server Protocol allows for asynchronous language-specific a
 #+END_SRC
 
 ** Languages
+
 *** C
 
 C indentation is really messed up in Emacs by default    
@@ -342,11 +307,20 @@ On entering Rust mode, enable indentation with 4 spaces, and enable [[Language s
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'rust-mode-hook
-	    (lambda ()
-	      (progn
-		(setq-local indent-tabs-mode nil)
-		(setq-local tab-width 4)
-		(lsp))))
+            (lambda ()
+              (progn
+                (setq-local indent-tabs-mode nil)
+                (setq-local tab-width 4)
+                (lsp))))
+#+END_SRC
+
+Add a function to run Rust (cargo) tests
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/rust-cargo-test ()
+    "Run cargo test"
+    (interactive)
+    (shell-command (format "cd %s ; cargo test&" default-directory) "*cargo test*"))
 #+END_SRC
 
 *** Python
@@ -369,4 +343,81 @@ CMake is not supported out of the box. Install =cmake-mode= to enable support
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode
     :ensure t)
+#+END_SRC
+
+* Keybindings
+
+I'm trying out =general.el= to manage my key bindings. In *normal mode*, I bind =SPC= as prefix.
+In non-normal (insert) modes, use =M-SPC= as prefix.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package general
+    :ensure t
+    :config)
+#+END_SRC
+
+Top-level keybindings
+
+#+BEGIN_SRC emacs-lisp
+  (general-define-key
+   :states 'normal
+   :prefix "SPC"
+    "f" '(counsel-find-file :which-key "file")                   ;; Find & open file
+    "d" '(counsel-dired :which-key "directory")                  ;; Find & open directory
+    "w" '(save-buffer :which-key "save")                         ;; Save current buffer
+    "r" '(my/linum-relative-toggle :which-key "relative linum")  ;; Toggle relative linum
+    "b" '(counsel-switch-buffer :which-key "buffer")             ;; Switch to buffer
+    "k" '(kill-buffer :which-key "kill buffer")                  ;; Kill buffer
+    "g" '(magit-status :which-key "magit")                       ;; Get magit status
+    "[" '(previous-buffer :which-key "prev buf")                 ;; Switch to prev buffer
+    "]" '(next-buffer :which-key "next buf")                     ;; Switch to next buffer
+    "B" '(counsel-bookmark :which-key "bookmark")                ;; Create/switch to bookmark
+    ;; Projectile stuff
+    "pp" '(projectile-switch-project :which-key "project")
+    "pf" '(projectile-find-file :which-key "file")
+    "pa" '(projectile-add-known-project :which-key "add")
+    ;; Searching with Swiper
+    "s" '(swiper-isearch :which-key "isearch")
+    "S" '(swiper-isearch-thing-at-point :which-key "isearch at point")
+   )
+#+END_SRC
+
+** emacs lisp keybindings
+
+Keybindings for emacs lisp - evaluating functions and buffers
+
+#+BEGIN_SRC emacs-lisp
+  (general-define-key
+   :states 'normal
+   :keymaps 'emacs-lisp-mode-map
+   :prefix "SPC"
+   "lf" '(eval-defun :which-key "defun")   ;; Evaluate function at point
+   "lb" '(eval-buffer :which-key "buffer") ;; Evaluate current buffer
+   )
+#+END_SRC
+
+** Rust keybindings
+
+Keybindings for Rust
+
+#+BEGIN_SRC emacs-lisp
+  (general-define-key
+   :states 'normal
+   :keymaps 'rust-mode-map
+   :prefix "SPC"
+   "lf" '(rust-format-buffer :which-key "rustfmt")     ;; Format current buffer with rustfmt
+   "lc" '(rust-compile :which-key "cargo build")       ;; Build project with cargo build
+   "lt" '(my/rust-cargo-test :which-key "cargo build") ;; Run cargo tests
+   )
+#+END_SRC
+
+** Org-mode keybindings
+
+#+BEGIN_SRC emacs-lisp
+  (general-define-key
+   :states 'normal
+   :keymaps 'org-mode-map
+   :prefix "SPC"
+   "a" '(org-agenda :which-key "agenda")  ;; Open org agenda
+   )
 #+END_SRC
