@@ -2,7 +2,6 @@
 #+AUTHOR: Srimanta Barua
 
 * Starting up
-
 ** Set sane defaults
 
 *** UTF-8
@@ -17,15 +16,31 @@
 
 *** backup files
 
-Emacs saves backup files which end with '~' and clutter up directories. Set up a dedicated backup
-directory for these files
+Emacs saves backup files which end with '~' and clutter up directories. Set up a dedicated backup directory for these files.
 
 #+BEGIN_SRC emacs-lisp
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 #+END_SRC
 
-* UI configuration
+*** Load non version-controlled files
 
+=.custom.el= stores options from the built-in customization interface for Emacs
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default custom-file (expand-file-name ".custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+#+END_SRC
+
+I use =secrets.el= to store variables I don't want to put on Github
+
+#+BEGIN_SRC emacs-lisp
+  (let ((secrets-file (expand-file-name "secrets.el" user-emacs-directory)))
+    (when (file-exists-p secrets-file)
+      (load secrets-file)))
+#+END_SRC
+
+* UI configuration
 ** Disable distracting UI elements
 
 #+BEGIN_SRC emacs-lisp
@@ -49,9 +64,10 @@ directory for these files
 ** Configure fonts
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-font 'default "SF Mono-11")
-  (set-face-font 'variable-pitch "Roboto-12")
-  (copy-face 'default 'fixed-pitch)
+  (custom-theme-set-faces
+   'user
+   '(variable-pitch ((t (:family "Roboto" :height 120))))
+   '(fixed-pitch ((t (:family "SF Mono" :height 110)))))
 #+END_SRC
 
 ** Start Emacs maximized
@@ -62,7 +78,7 @@ directory for these files
 
 ** Configure Emacs theme
 
-The doom-one theme looks good   
+The =doom-one= theme looks good.
 
 #+BEGIN_SRC emacs-lisp
   (use-package doom-themes
@@ -74,11 +90,9 @@ The doom-one theme looks good
 #+END_SRC
 
 * UX Configuration
-
 ** Smooth Scrolling
    
-By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line
-at a time
+By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line at a time.
 
 #+BEGIN_SRC emacs-lisp
   (use-package smooth-scrolling
@@ -88,8 +102,7 @@ at a time
 
 ** Relative line numbering
 
-In vim, I bind =<leader> r= (i.e. =, r=) to switch to relative line numbering in the current buffer.
-Enable similar functionality for Emacs
+In vim, I bind =<leader> r= (i.e. =, r=) to switch to relative line numbering in the current buffer. Enable similar functionality for Emacs.
 
 #+BEGIN_SRC emacs-lisp
   (use-package linum-relative
@@ -106,10 +119,9 @@ Enable similar functionality for Emacs
     (linum-on))
 #+END_SRC
 
-** evil mode
+** =evil-mode= for Vim emulation
     
-Frankly speaking, Vim is a much better text editor than Emacs. We can capture some of that using
-Evil mode in Emacs.
+Frankly speaking, Vim is a much better text editor than Emacs. We can capture some of that using =evil-mode= in Emacs.
 
 #+BEGIN_SRC emacs-lisp
   (use-package evil
@@ -123,10 +135,9 @@ Evil mode in Emacs.
   (evil-mode t)
 #+END_SRC
 
-** which-key to know what to press next
+** =which-key= to know what to press next
 
-=which-key= is a helpful plugin which brings up a popup with all the keybindings
-available after the key you've just pressed
+=which-key= is a helpful plugin which brings up a popup with all the keybindings available after the key you've just pressed.
 
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
@@ -138,9 +149,9 @@ available after the key you've just pressed
   (which-key-mode)
 #+END_SRC
 
-** ivy, counsel, and swiper
+** =ivy=, =counsel=, and =swiper=
 
-Ivy is a generic completion framework for Emacs
+=ivy= is a generic completion framework for Emacs.
 
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
@@ -151,7 +162,7 @@ Ivy is a generic completion framework for Emacs
   (ivy-mode t)
 #+END_SRC
 
-Counsel goes one step further to replace standard commands with ones which make best use of ivy
+=counsel= goes one step further to replace standard commands with ones which make best use of =ivy=.
 
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
@@ -159,7 +170,7 @@ Counsel goes one step further to replace standard commands with ones which make 
   (counsel-mode t)
 #+END_SRC
 
-Enable swiper for searching
+Enable =swiper= for searching.
 
 #+BEGIN_SRC emacs-lisp
   (use-package swiper
@@ -167,14 +178,13 @@ Enable swiper for searching
 #+END_SRC
 
 * Version control
-
 ** Disable Emacs' built-in version control
    
 #+BEGIN_SRC emacs-lisp
   (setq vc-handled-backends nil)
 #+END_SRC
 
-** Use Magit for git
+** Use =magit= for git
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit
@@ -182,8 +192,7 @@ Enable swiper for searching
 #+END_SRC
 
 * Programming
-
-** Autocompletion with company
+** Autocompletion with =company=
 
 Company stands for "COMPlete ANYthing", and is an extensible completion framework for Emacs
 
@@ -211,18 +220,18 @@ Company stands for "COMPlete ANYthing", and is an extensible completion framewor
   (global-company-mode)
 #+END_SRC
 
-** Syntax checking with Flycheck
+** Syntax checking with =flycheck=
 
-Flycheck is a syntax checker/linter with multiple backends
+Flycheck is a syntax checker/linter with multiple backends.
 
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :ensure t)
 #+END_SRC
 
-** Snippets with Yasnippet
+** Snippets with =yasnippet=
 
-Yasnippet is a snippet-expansion plugin
+=yasnippet= is a snippet-expansion plugin
 
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
@@ -236,9 +245,9 @@ Yasnippet is a snippet-expansion plugin
   (yas-global-mode t)
 #+END_SRC
 
-** Project management with Projectile
+** Project management with =projectile=
 
-Projectile is a project-management package for Emacs
+=projectile= is a project-management package for Emacs
 
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
@@ -250,8 +259,7 @@ Projectile is a project-management package for Emacs
 
 ** Language server protocol
 
-Microsoft's Language Server Protocol allows for asynchronous language-specific actions
-(like completion), using external server processes.
+Microsoft's Language Server Protocol allows for asynchronous language-specific actions (like completion), using external server processes.
 
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
@@ -345,10 +353,64 @@ CMake is not supported out of the box. Install =cmake-mode= to enable support
     :ensure t)
 #+END_SRC
 
+* Org mode
+
+My configuration for org mode
+
+** Prettify
+
+Hide emphasis markers ('*' for bold, '/' for italics)
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-hide-emphasis-markers t)
+#+END_SRC
+
+Indent to different levels
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-startup-indented t
+	org-src-tab-acts-natively t)
+#+END_SRC
+
+Configure different bullet styles for different levels
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t)
+  (add-hook 'org-mode-hook 'org-bullets-mode)
+#+END_SRC
+
+Customize faces for org mode elements. We are going to be switching to a variable-pitch font by default, and overriding it with a fixed-width font for specific elements (code blocks, tables)
+
+#+BEGIN_SRC emacs-lisp
+  (custom-theme-set-faces
+   'user
+   '(org-document-info ((t (:foreground "dark orange"))))
+   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+   '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+   '(org-link ((t (:foreground "royal blue" :underline t))))
+   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+   '(org-property-value ((t (:inherit fixed-pitch))))
+   '(org-special-keyword ((t (:inherit font-lock-comment-face fixed-pitch))))
+   '(org-block ((t (:inherit fixed-pitch))))
+   '(org-code ((t (:inherit (shadow fixed-pitch)))))
+   '(org-table ((t (:inherit fixed-pitch :foreground "forest green"))))
+   '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+   '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+#+END_SRC
+
+Use a variable width font for org mode buffers. Also enable =visual-line-mode=, since this adjusts long lines better.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (variable-pitch-mode t)
+              (visual-line-mode t)))
+#+END_SRC
+
 * Keybindings
 
-I'm trying out =general.el= to manage my key bindings. In *normal mode*, I bind =SPC= as prefix.
-In non-normal (insert) modes, use =M-SPC= as prefix.
+I'm trying out =general.el= to manage my key bindings. In *normal mode*, I bind =SPC= as prefix. In non-normal (insert) modes, use =M-SPC= as prefix.
 
 #+BEGIN_SRC emacs-lisp
   (use-package general
@@ -421,3 +483,5 @@ Keybindings for Rust
    "a" '(org-agenda :which-key "agenda")  ;; Open org agenda
    )
 #+END_SRC
+
+That's all, folks!
