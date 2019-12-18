@@ -80,17 +80,17 @@ I use =secrets.el= to store variables I don't want to put on Github
 The =doom-one= theme looks good.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package doom-themes
-    :ensure t
-    :config
-    (setq doom-themes-enable-bold t
-          doom-themes-enable-italic t)
-    (load-theme 'doom-one t))
+  ;; (use-package doom-themes
+    ;; :ensure t
+    ;; :config
+    ;; (setq doom-themes-enable-bold t
+          ;; doom-themes-enable-italic t)
+    ;; (load-theme 'doom-one t))
 #+END_SRC
 
 * UX Configuration
 ** Smooth Scrolling
-   
+
 By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line at a time.
 
 #+BEGIN_SRC emacs-lisp
@@ -119,7 +119,7 @@ In vim, I bind =<leader> r= (i.e. =, r=) to switch to relative line numbering in
 #+END_SRC
 
 ** =evil-mode= for Vim emulation
-    
+
 Frankly speaking, Vim is a much better text editor than Emacs. We can capture some of that using =evil-mode= in Emacs.
 
 #+BEGIN_SRC emacs-lisp
@@ -176,9 +176,15 @@ Enable =swiper= for searching.
     :ensure t)
 #+END_SRC
 
+** Delete trailing whitespace on save
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+#+END_SRC
+
 * Version control
 ** Disable Emacs' built-in version control
-   
+
 #+BEGIN_SRC emacs-lisp
   (setq vc-handled-backends nil)
 #+END_SRC
@@ -284,17 +290,17 @@ Microsoft's Language Server Protocol allows for asynchronous language-specific a
 ** Languages
 *** C
 
-C indentation is really messed up in Emacs by default    
+C indentation is really messed up in Emacs by default
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c-mode-hook
-	    (lambda ()
-	      (progn
-		(setq-local c-basic-offset 8)
-		(setq-local c-default-style "linux")
-		(setq-local tab-width 8)
-		(setq-local indent-tabs-mode t)
-		(lsp))))
+            (lambda ()
+              (progn
+                (setq c-basic-offset 8)
+                (setq c-default-style "java")
+                (setq tab-width 8)
+                (setq indent-tabs-mode t)
+                (lsp))))
 #+END_SRC
 
 *** Rust
@@ -346,6 +352,23 @@ CMake is not supported out of the box. Install =cmake-mode= to enable support
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode
     :ensure t)
+#+END_SRC
+
+*** Markdown
+
+Enable markdown support
+
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :config
+    (setq markdown-command "markdown_py"))
+          ;;markdown-live-preview-window-function (lambda (file)
+                                                  ;;(browse-url-firefox file))))
 #+END_SRC
 
 *** Enable completion with company in select modes
@@ -494,3 +517,5 @@ Keybindings for Rust
 #+END_SRC
 
 That's all, folks!
+
+(buf)

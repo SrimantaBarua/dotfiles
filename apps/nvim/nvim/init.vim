@@ -41,6 +41,7 @@ source ~/.config/nvim/config/04-language-client.vim
 source ~/.config/nvim/config/05-fzf.vim
 source ~/.config/nvim/config/06-ultisnips.vim
 source ~/.config/nvim/config/07-coc.vim
+source ~/.config/nvim/config/10-markdown-preview.vim
 
 
 " 7. Autocmds ================

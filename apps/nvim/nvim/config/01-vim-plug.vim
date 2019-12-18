@@ -42,4 +42,8 @@ Plug 'honza/vim-snippets'
 Plug 'srcery-colors/srcery-vim'
 
 
+" -------- Markdown live preview ----------------
+
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
+
 call plug#end()

@@ -35,3 +35,7 @@ nnoremap <leader>fc :Commands<cr>
 nnoremap <silent> K :call LanguageClient_textDocument_hover()<cr>
 nnoremap <silent> gd :call LanguageClient_textDocument_definition()<cr>
 nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<cr>
+
+" Markdown preview
+nnoremap <leader>mp :MarkdownPreview<cr>
+nnoremap <leader>mps :MarkdownPreviewStop<cr>
