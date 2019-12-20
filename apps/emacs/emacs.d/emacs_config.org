@@ -69,6 +69,18 @@ I use =secrets.el= to store variables I don't want to put on Github
    '(fixed-pitch ((t (:family "SF Mono" :height 110)))))
 #+END_SRC
 
+** Install icons
+
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons
+    :ensure t)
+
+  (use-package all-the-icons-ivy
+    :ensure t
+    :config
+    (all-the-icons-ivy-setup))
+#+END_SRC
+
 ** Start Emacs maximized
 
 #+BEGIN_SRC emacs-lisp
@@ -80,12 +92,12 @@ I use =secrets.el= to store variables I don't want to put on Github
 The =doom-one= theme looks good.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package doom-themes
-    ;; :ensure t
-    ;; :config
-    ;; (setq doom-themes-enable-bold t
-          ;; doom-themes-enable-italic t)
-    ;; (load-theme 'doom-one t))
+  (use-package doom-themes
+    :ensure t
+    :config
+    (setq doom-themes-enable-bold t
+          doom-themes-enable-italic t)
+    (load-theme 'doom-one t))
 #+END_SRC
 
 * UX Configuration
@@ -176,6 +188,22 @@ Enable =swiper= for searching.
     :ensure t)
 #+END_SRC
 
+** =treemacs= for tree view
+
+#+BEGIN_SRC emacs-lisp
+  (use-package treemacs
+    :ensure t)
+
+  (use-package treemacs-evil
+    :ensure t)
+
+  (use-package treemacs-projectile
+    :ensure t)
+
+  (use-package treemacs-magit
+    :ensure t)
+#+END_SRC
+
 ** Delete trailing whitespace on save
 
 #+BEGIN_SRC emacs-lisp
@@ -216,9 +244,7 @@ Company stands for "COMPlete ANYthing", and is an extensible completion framewor
                     :filter ,(lambda (cmd)
                                (when (company-explicit-action-p)
                                  cmd)))))
-    (define-key company-active-map (kbd "TAB") #'company-complete-selection)
-    (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
-    (define-key company-active-map (kbd "SPC") nil)
+    (define-key company-active-map (kbd "C-SPC") #'company-complete-selection)
     (setq company-auto-complete-chars nil))
 #+END_SRC
 
@@ -257,6 +283,14 @@ Flycheck is a syntax checker/linter with multiple backends.
     :config
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
   (projectile-mode 1)
+#+END_SRC
+
+Use =counsel= front-end for projectile
+
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel-projectile
+    :ensure t)
+  (counsel-projectile-mode t)
 #+END_SRC
 
 ** Language server protocol
@@ -389,6 +423,12 @@ Enable markdown support
 
 My configuration for org mode
 
+** Ensure company-mode  is off
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook '(lambda () (company-mode nil)))
+#+END_SRC
+
 ** Prettify
 
 Hide emphasis markers ('*' for bold, '/' for italics)
@@ -446,8 +486,7 @@ I'm trying out =general.el= to manage my key bindings. In *normal mode*, I bind 
 
 #+BEGIN_SRC emacs-lisp
   (use-package general
-    :ensure t
-    :config)
+    :ensure t)
 #+END_SRC
 
 Top-level keybindings
@@ -467,12 +506,21 @@ Top-level keybindings
     "]" '(next-buffer :which-key "next buf")                     ;; Switch to next buffer
     "B" '(counsel-bookmark :which-key "bookmark")                ;; Create/switch to bookmark
     ;; Projectile stuff
-    "pp" '(projectile-switch-project :which-key "project")
-    "pf" '(projectile-find-file :which-key "file")
+    "pp" '(counsel-projectile-switch-project :which-key "project")
+    "pf" '(counsel-projectile-find-file :which-key "file")
     "pa" '(projectile-add-known-project :which-key "add")
     ;; Searching with Swiper
     "s" '(swiper-isearch :which-key "isearch")
     "S" '(swiper-isearch-thing-at-point :which-key "isearch at point")
+   )
+#+END_SRC
+
+** Treemacs key-bindings
+
+#+BEGIN_SRC emacs-lisp
+  (general-define-key
+   :prefix "C-c"
+   "t" '(treemacs :which-key "treemacs") ;; Toggle treemacs
    )
 #+END_SRC
 
