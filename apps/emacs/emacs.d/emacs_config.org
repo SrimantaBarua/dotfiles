@@ -245,7 +245,11 @@ Company stands for "COMPlete ANYthing", and is an extensible completion framewor
                                (when (company-explicit-action-p)
                                  cmd)))))
     (define-key company-active-map (kbd "C-SPC") #'company-complete-selection)
-    (setq company-auto-complete-chars nil))
+    (setq company-auto-complete-chars nil)
+    ;; Disable company-mode in org mode
+    (setq company-global-modes '(not org-mode)))
+
+  (global-company-mode)
 #+END_SRC
 
 ** Syntax checking with =flycheck=
@@ -405,29 +409,9 @@ Enable markdown support
                                                   ;;(browse-url-firefox file))))
 #+END_SRC
 
-*** Enable completion with company in select modes
-
-#+BEGIN_SRC emacs-lisp
-  (setq company-enabled-hooks
-        '(c-mode-hook rust-mode-hook python-mode-hook cmake-mode-hook lisp-mode-hook
-                      emacs-lisp-mode-hook text-mode-hook))
-
-  (let ((mode-hooks company-enabled-hooks)
-        (cur-hook))
-    (while mode-hooks
-      (setq cur-hook (car mode-hooks))
-      (setq mode-hooks (cdr mode-hooks))
-      (add-hook cur-hook 'company-mode)))
-#+END_SRC
 * Org mode
 
 My configuration for org mode
-
-** Ensure company-mode  is off
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook '(lambda () (company-mode nil)))
-#+END_SRC
 
 ** Prettify
 

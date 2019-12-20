@@ -20,5 +20,12 @@
 ;; (org-babel-load-file (expand-file-name "emacs_config.org" user-emacs-directory))
 
 ;; Load byte-compiled file generated from org config
-(load-file (expand-file-name "emacs_config.elc" user-emacs-directory))
+(let ((of (expand-file-name "emacs_config.org" user-emacs-directory))
+      (elf (expand-file-name "emacs_config.el" user-emacs-directory))
+      (elcf (expand-file-name "emacs_config.elc" user-emacs-directory)))
+  (unless (file-exists-p elcf)
+    (org-babel-tangle-file of elf)
+    (byte-compile-file elf))
+  (load-file elcf))
+
 (garbage-collect)
