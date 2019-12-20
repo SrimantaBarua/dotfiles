@@ -101,6 +101,12 @@ The =doom-one= theme looks good.
 #+END_SRC
 
 * UX Configuration
+** Don't want to keep typing "yes" or "no"
+
+#+BEGIN_SRC emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
 ** Smooth Scrolling
 
 By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line at a time.
@@ -250,6 +256,15 @@ Company stands for "COMPlete ANYthing", and is an extensible completion framewor
     (setq company-global-modes '(not org-mode)))
 
   (global-company-mode)
+#+END_SRC
+
+** Rainbow delimiters
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 #+END_SRC
 
 ** Syntax checking with =flycheck=
@@ -424,8 +439,8 @@ Hide emphasis markers ('*' for bold, '/' for italics)
 Indent to different levels
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-startup-indented t
-	org-src-tab-acts-natively t)
+  ;; (setq org-startup-indented t
+        ;; org-src-tab-acts-natively t)
 #+END_SRC
 
 Configure different bullet styles for different levels
@@ -436,32 +451,32 @@ Configure different bullet styles for different levels
   (add-hook 'org-mode-hook 'org-bullets-mode)
 #+END_SRC
 
-Customize faces for org mode elements. We are going to be switching to a variable-pitch font by default, and overriding it with a fixed-width font for specific elements (code blocks, tables)
+# Customize faces for org mode elements. We are going to be switching to a variable-pitch font by default, and overriding it with a fixed-width font for specific elements (code blocks, tables)
 
 #+BEGIN_SRC emacs-lisp
-  (custom-theme-set-faces
-   'user
-   '(org-document-info ((t (:foreground "dark orange"))))
-   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-   '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-   '(org-link ((t (:foreground "royal blue" :underline t))))
-   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-property-value ((t (:inherit fixed-pitch))))
-   '(org-special-keyword ((t (:inherit font-lock-comment-face fixed-pitch))))
-   '(org-block ((t (:inherit fixed-pitch))))
-   '(org-code ((t (:inherit (shadow fixed-pitch)))))
-   '(org-table ((t (:inherit fixed-pitch :foreground "forest green"))))
-   '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-   '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+  ;; (custom-theme-set-faces
+   ;; 'user
+   ;; '(org-document-info ((t (:foreground "dark orange"))))
+   ;; '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+   ;; '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+   ;; '(org-link ((t (:foreground "royal blue" :underline t))))
+   ;; '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+   ;; '(org-property-value ((t (:inherit fixed-pitch))))
+   ;; '(org-special-keyword ((t (:inherit font-lock-comment-face fixed-pitch))))
+   ;; '(org-block ((t (:inherit fixed-pitch))))
+   ;; '(org-code ((t (:inherit (shadow fixed-pitch)))))
+   ;; '(org-table ((t (:inherit fixed-pitch :foreground "forest green"))))
+   ;; '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+   ;; '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
 #+END_SRC
 
-Use a variable width font for org mode buffers. Also enable =visual-line-mode=, since this adjusts long lines better.
+# Use a variable width font for org mode buffers. Also enable =visual-line-mode=, since this adjusts long lines better.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (variable-pitch-mode t)
-              (visual-line-mode t)))
+  ;; (add-hook 'org-mode-hook
+	    ;; (lambda ()
+	      ;; (variable-pitch-mode t)
+	      ;; (visual-line-mode t)))
 #+END_SRC
 
 * [META] - byte-compile config
@@ -473,7 +488,8 @@ Use a variable width font for org mode buffers. Also enable =visual-line-mode=, 
     (delete-file "~/.emacs.d/emacs_config.el")
     (delete-file "~/.emacs.d/emacs_config.elc")
     (org-babel-tangle-file "~/.emacs.d/emacs_config.org" "~/.emacs.d/emacs_config.el")
-    (byte-compile-file "~/.emacs.d/emacs_config.el"))
+    (byte-compile-file "~/.emacs.d/emacs_config.el")
+    (load-file "~/.emacs.d/emacs_config.elc"))
 #+END_SRC
 
 * Keybindings
@@ -508,6 +524,8 @@ Top-level keybindings
     ;; Searching with Swiper
     "s" '(swiper-isearch :which-key "isearch")
     "S" '(swiper-isearch-thing-at-point :which-key "isearch at point")
+    ;; Byte-compile config
+    "mecc" '(my/extract-and-compile-config :which-key "compile config")
    )
 #+END_SRC
 
@@ -563,3 +581,165 @@ Keybindings for Rust
 That's all, folks!
 
 (buf)
+
+* Configure the mode line
+** file-type icon
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-file-type-icon ()
+    (propertize (all-the-icons-icon-for-buffer) :height 1))
+#+END_SRC
+
+** =evil-mode= state
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-evil-mode-state ()
+    (if (boundp 'evil-state)
+	(propertize
+	 (format " %s " (upcase (symbol-name evil-state)))
+	 'font-lock-face
+	 (if (eq evil-state 'normal)
+	     '(:foreground "black" :background "deep sky blue")
+	   (if (eq evil-state 'insert)
+	       '(:foreground "white" :background "forest green")
+	     (if (eq evil-state 'visual)
+		 '(:foreground "white" :background "red")
+	       '(:foreground "black" :background "yellow")))))))
+#+END_SRC
+
+** TODO Buffer-name with modified state
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-buffer-name ()
+    (if buffer-read-only
+	;; if the buffer is read-only, use a "lock" icon
+	(concat
+	 (all-the-icons-material "lock" :height 0.9 :face 'all-the-icons-yellow)
+	 " "
+	 (propertize (buffer-name) 'font-lock-face '(:weight bold :foreground "#ffd446")))
+      (if (and (buffer-file-name) (buffer-modified-p))
+	  ;; if the buffer is modified, use a "floppy" or "save" icon
+	  (concat
+	   (all-the-icons-material "save" :height 0.9 :face 'all-the-icons-red)
+	   " "
+	   (propertize (buffer-name) 'font-lock-face '(:weight bold :foreground "#eb595a")))
+	;; otherwise default, return buffer name in bold
+	(propertize (buffer-name) 'face 'bold))))
+#+END_SRC
+
+** Cursor position
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-cursor-position ()
+    (propertize
+     (format
+      "%d:%d %d%%"
+      (line-number-at-pos)
+      (current-column)
+      (/ (* 100 (line-number-at-pos)) (line-number-at-pos (point-max))))
+     'font-lock-face '(:weight light :height 0.9)))
+#+END_SRC
+
+** TODO Encoding
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-encoding ()
+    (propertize
+     "LF UTF-8"
+     'font-lock-face '(:weight light :height 0.9)))
+#+END_SRC
+
+** Major mode
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-major-mode ()
+    (propertize (format "%s" major-mode) 'font-lock-face '(:weight bold :foreground "deep sky blue")))
+#+END_SRC
+
+** LSP
+
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+
+** Projectile
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-projectile-project ()
+    (propertize (projectile-project-name) 'font-lock-face '(:weight bold)))
+#+END_SRC
+
+** git
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/modeline-git-info ()
+    (let ((branch (magit-get-current-branch)))
+      (if branch
+	  (if (magit-anything-unstaged-p)
+	      (concat
+	       (propertize
+		(all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-red)
+		'display '(raise 0.0))
+	       " "
+	       (propertize branch 'font-lock-face '(:weight bold :foreground "#eb595a")))
+	    (if (magit-anything-modified-p)
+		(concat
+		 (propertize
+		  (all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-yellow)
+		  'display '(raise 0.0))
+		 " "
+		 (propertize branch 'font-lock-face '(:weight bold :foreground "#ffd446")))
+	      (concat
+	       (propertize
+		(all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-green)
+		'display '(raise 0.0))
+	       " "
+	       (propertize branch 'font-lock-face '(:weight bold :foreground "#90a959")))))
+	"")))
+#+END_SRC
+
+** Time
+
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+
+** Put the modeline together
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   mode-line-format
+   (list
+    ;; space
+    " "
+    ;; file-type icon for buffer
+    '(:eval (my/modeline-file-type-icon))
+    ;; space
+    " "
+    ;; evil-mode
+    '(:eval (my/modeline-evil-mode-state))
+    ;; space
+    " "
+    ;; buffer name
+    '(:eval (my/modeline-buffer-name))
+    ;; space
+    "  "
+    ;; current cursor position in buffer
+    '(:eval (my/modeline-cursor-position))
+    ;; space
+    "  "
+    ;; major mode
+    '(:eval (my/modeline-major-mode))
+    ;; space
+    "  "
+    ;; encoding
+    '(:eval (my/modeline-encoding))
+    ;; space
+    "  "
+    ;; projectile project
+    '(:eval (my/modeline-projectile-project))
+    ;; space
+    "  "
+    ;; git branch
+    '(:eval (my/modeline-git-info))))
+#+END_SRC
