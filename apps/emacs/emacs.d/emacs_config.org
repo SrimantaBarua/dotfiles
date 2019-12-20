@@ -633,10 +633,10 @@ That's all, folks!
   (defun my/modeline-cursor-position ()
     (propertize
      (format
-      "%d:%d %d%%"
+      "%d/%d:%d"
       (line-number-at-pos)
-      (current-column)
-      (/ (* 100 (line-number-at-pos)) (line-number-at-pos (point-max))))
+      (line-number-at-pos (point-max))
+      (current-column))
      'font-lock-face '(:weight light :height 0.9)))
 #+END_SRC
 
@@ -656,7 +656,7 @@ That's all, folks!
     (propertize (format "%s" major-mode) 'font-lock-face '(:weight bold :foreground "deep sky blue")))
 #+END_SRC
 
-** LSP
+** TODO LSP
 
 #+BEGIN_SRC emacs-lisp
 
@@ -701,7 +701,10 @@ That's all, folks!
 ** Time
 
 #+BEGIN_SRC emacs-lisp
-
+  (defun my/modeline-time-date ()
+    (propertize
+     (format-time-string "%H:%M %a %d/%m/%g")
+     'font-lock-face '(:weight light :height 0.9)))
 #+END_SRC
 
 ** Put the modeline together
@@ -741,5 +744,9 @@ That's all, folks!
     ;; space
     "  "
     ;; git branch
-    '(:eval (my/modeline-git-info))))
+    '(:eval (my/modeline-git-info))
+    ;; space
+    "  "
+    ;; time and date
+    '(:eval (my/modeline-time-date))))
 #+END_SRC
