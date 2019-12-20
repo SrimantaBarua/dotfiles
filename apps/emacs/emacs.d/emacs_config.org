@@ -372,11 +372,11 @@ On entering Python mode, enable indentation with 4 spaces, and enable [[Language
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook
-	    (lambda ()
-	      (progn
-		(setq-local indent-tabs-mode nil
-			    tab-width 4)
-		(lsp))))
+            (lambda ()
+              (progn
+                (setq-local indent-tabs-mode nil)
+                (setq-local tab-width 4)
+                (lsp))))
 #+END_SRC
 
 *** CMake
@@ -478,6 +478,18 @@ Use a variable width font for org mode buffers. Also enable =visual-line-mode=, 
             (lambda ()
               (variable-pitch-mode t)
               (visual-line-mode t)))
+#+END_SRC
+
+* [META] - byte-compile config
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/extract-and-compile-config ()
+    "Use org-babel to extract config, and byte-compile it"
+    (interactive)
+    (delete-file "~/.emacs.d/emacs_config.el")
+    (delete-file "~/.emacs.d/emacs_config.elc")
+    (org-babel-tangle-file "~/.emacs.d/emacs_config.org" "~/.emacs.d/emacs_config.el")
+    (byte-compile-file "~/.emacs.d/emacs_config.el"))
 #+END_SRC
 
 * Keybindings

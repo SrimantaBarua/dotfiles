@@ -17,5 +17,8 @@
 (require 'org)
 
 ;; Load org emacs config
-(org-babel-load-file (expand-file-name "emacs_config.org" user-emacs-directory))
+;; (org-babel-load-file (expand-file-name "emacs_config.org" user-emacs-directory))
+
+;; Load byte-compiled file generated from org config
+(load-file (expand-file-name "emacs_config.elc" user-emacs-directory))
 (garbage-collect)
