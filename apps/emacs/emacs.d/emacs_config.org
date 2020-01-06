@@ -55,7 +55,7 @@ I use =secrets.el= to store variables I don't want to put on Github
 #+BEGIN_SRC emacs-lisp
   (display-time-mode t)           ;; Display time in modeline
   (column-number-mode t)          ;; Display column number in modeline
-  (global-linum-mode t)           ;; Enable line numbers everywhere
+  ;; (global-linum-mode t)           ;; Enable line numbers everywhere
   (electric-pair-mode t)          ;; Color pairs (parens, brackets etc) when typing
   (setq-default line-spacing 3)   ;; Set spacing between lines
 #+END_SRC
@@ -112,9 +112,9 @@ The =doom-one= theme looks good.
 By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line at a time.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package smooth-scrolling
-    :ensure t)
-  (smooth-scrolling-mode t)
+  ;; (use-package smooth-scrolling
+    ;; :ensure t)
+  ;; (smooth-scrolling-mode t)
 #+END_SRC
 
 ** Relative line numbering
@@ -125,15 +125,15 @@ In vim, I bind =<leader> r= (i.e. =, r=) to switch to relative line numbering in
   (use-package linum-relative
     :ensure t
     :config
-    (linum-relative-off)
-    (linum-on))
+    (linum-relative-off))
+    ;; (linum-on))
   (require 'linum-relative)
 
   ;; Define a function to toggle relative line numbers
   (defun my/linum-relative-toggle ()
     (interactive)
-    (linum-relative-toggle)
-    (linum-on))
+    (linum-relative-toggle))
+    ;; (linum-on))
 #+END_SRC
 
 ** =evil-mode= for Vim emulation
@@ -439,44 +439,61 @@ Hide emphasis markers ('*' for bold, '/' for italics)
 Indent to different levels
 
 #+BEGIN_SRC emacs-lisp
-  ;; (setq org-startup-indented t
-        ;; org-src-tab-acts-natively t)
+  (setq org-startup-indented t
+        org-src-tab-acts-natively t)
 #+END_SRC
 
 Configure different bullet styles for different levels
 
 #+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :ensure t)
+  (use-package org-bullets :ensure t)
   (add-hook 'org-mode-hook 'org-bullets-mode)
 #+END_SRC
 
-# Customize faces for org mode elements. We are going to be switching to a variable-pitch font by default, and overriding it with a fixed-width font for specific elements (code blocks, tables)
+Customize faces for org mode elements. We are going to be switching to a variable-pitch font by default, and overriding it with a fixed-width font for specific elements (code blocks, tables)
 
 #+BEGIN_SRC emacs-lisp
-  ;; (custom-theme-set-faces
-   ;; 'user
-   ;; '(org-document-info ((t (:foreground "dark orange"))))
-   ;; '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-   ;; '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-   ;; '(org-link ((t (:foreground "royal blue" :underline t))))
-   ;; '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   ;; '(org-property-value ((t (:inherit fixed-pitch))))
-   ;; '(org-special-keyword ((t (:inherit font-lock-comment-face fixed-pitch))))
-   ;; '(org-block ((t (:inherit fixed-pitch))))
-   ;; '(org-code ((t (:inherit (shadow fixed-pitch)))))
-   ;; '(org-table ((t (:inherit fixed-pitch :foreground "forest green"))))
-   ;; '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-   ;; '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+  (custom-theme-set-faces
+   'user
+   '(org-document-info ((t (:foreground "dark orange"))))
+   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+   '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+   '(org-link ((t (:foreground "royal blue" :underline t))))
+   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+   '(org-property-value ((t (:inherit fixed-pitch))))
+   '(org-special-keyword ((t (:inherit font-lock-comment-face fixed-pitch))))
+   '(org-block ((t (:inherit fixed-pitch))))
+   '(org-code ((t (:inherit (shadow fixed-pitch)))))
+   '(org-table ((t (:inherit fixed-pitch :foreground "forest green"))))
+   '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+   '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
 #+END_SRC
 
-# Use a variable width font for org mode buffers. Also enable =visual-line-mode=, since this adjusts long lines better.
+Set different font sizes for different header levels
 
 #+BEGIN_SRC emacs-lisp
-  ;; (add-hook 'org-mode-hook
-	    ;; (lambda ()
-	      ;; (variable-pitch-mode t)
-	      ;; (visual-line-mode t)))
+  (let* ((base-font-color (face-foreground 'default nil 'default))
+         (headline `(:inherit default :weight bold :foreground ,base-font-color)))
+    (custom-theme-set-faces
+     'user
+     `(org-document-title ((t (,@headline :height 2.0))))
+     `(org-level-1 ((t (,@headline :height 1.75))))
+     `(org-level-2 ((t (,@headline :height 1.5))))
+     `(org-level-3 ((t (,@headline :height 1.25))))
+     `(org-level-4 ((t (,@headline :height 1.1))))
+     `(org-level-5 ((t (,@headline :height 1.0))))
+     `(org-level-6 ((t (,@headline :height 1.0))))
+     `(org-level-7 ((t (,@headline :height 1.0))))
+     `(org-level-8 ((t (,@headline :height 1.0))))))
+#+END_SRC
+
+Use a variable width font for org mode buffers. Also enable =visual-line-mode=, since this adjusts long lines better.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'text-mode-hook
+	    (lambda ()
+	      (variable-pitch-mode t)
+	      (visual-line-mode t)))
 #+END_SRC
 
 * [META] - byte-compile config
@@ -510,7 +527,8 @@ Top-level keybindings
     "f" '(counsel-find-file :which-key "file")                   ;; Find & open file
     "d" '(counsel-dired :which-key "directory")                  ;; Find & open directory
     "w" '(save-buffer :which-key "save")                         ;; Save current buffer
-    "r" '(my/linum-relative-toggle :which-key "relative linum")  ;; Toggle relative linum
+    "rl" '(my/linum-relative-toggle :which-key "relative linum") ;; Toggle relative linum
+    "ll" '(linum-mode :which-key "linum")                        ;; Toggle line numbers
     "b" '(counsel-switch-buffer :which-key "buffer")             ;; Switch to buffer
     "k" '(kill-buffer :which-key "kill buffer")                  ;; Kill buffer
     "g" '(magit-status :which-key "magit")                       ;; Get magit status
@@ -675,7 +693,7 @@ That's all, folks!
   (defun my/modeline-git-info ()
     (let ((branch (magit-get-current-branch)))
       (if branch
-	  (if (magit-anything-unstaged-p)
+	  (if (or (magit-untracked-files) (magit-anything-unstaged-p))
 	      (concat
 	       (propertize
 		(all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-red)

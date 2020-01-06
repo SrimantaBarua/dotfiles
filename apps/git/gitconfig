@@ -1,3 +1,5 @@
 [user]
 	name = Srimanta Barua
 	email = srimanta.barua1@gmail.com
+[core]
+	pager = less -X -F

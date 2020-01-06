@@ -3,9 +3,14 @@
 set termguicolors
 set background=dark
 
-let g:srcery_bold = 1
-let g:srcery_italic = 1
-colorscheme srcery
+" let g:srcery_bold = 1
+" let g:srcery_italic = 1
+" colorscheme srcery
+
+" colorscheme apprentice
+
+let ayucolor="dark"
+colorscheme ayu
 
 " colorscheme base16-solarized-light
 " colorscheme base16-gruvbox-dark-hard

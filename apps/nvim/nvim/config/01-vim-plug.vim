@@ -39,11 +39,14 @@ Plug 'honza/vim-snippets'
 
 " -------- Colorscheme ----------------
 
-Plug 'srcery-colors/srcery-vim'
+" Plug 'srcery-colors/srcery-vim'
+" Plug 'romainl/Apprentice'
+Plug 'ayu-theme/ayu-vim'
 
 
 " -------- Markdown live preview ----------------
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
+
 
 call plug#end()

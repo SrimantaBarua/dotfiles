@@ -46,7 +46,3 @@ source ~/.config/nvim/config/10-markdown-preview.vim
 
 " 7. Autocmds ================
 source ~/.config/nvim/config/08-autocmds.vim
-
-" Deoplete ----------------
-" let g:deoplete#enable_at_startup = 1
-" autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | silent! pclose | endif
