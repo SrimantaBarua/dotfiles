@@ -39,14 +39,20 @@ I use =secrets.el= to store variables I don't want to put on Github
       (load secrets-file)))
 #+END_SRC
 
+*** Set binary to run for =ansi-term=
+
+#+BEGIN_SRC emacs-lisp
+  (setq explicit-shell-file-name "/bin/bash")
+#+END_SRC
+
 * UI configuration
 ** Disable distracting UI elements
 
 #+BEGIN_SRC emacs-lisp
-  (blink-cursor-mode -1)          ;; Disable cursor blinking
-  (scroll-bar-mode -1)            ;; Disable scroll bar
-  (tool-bar-mode -1)              ;; Disable tool bar
-  (menu-bar-mode -1)              ;; Disable menu bar
+  (blink-cursor-mode -1)           ;; Disable cursor blinking
+  (scroll-bar-mode -1)             ;; Disable scroll bar
+  (tool-bar-mode -1)               ;; Disable tool bar
+  (menu-bar-mode -1)               ;; Disable menu bar
   (setq inhibit-startup-screen t)  ;; Disable initial welcome screen
 #+END_SRC
 
@@ -55,7 +61,6 @@ I use =secrets.el= to store variables I don't want to put on Github
 #+BEGIN_SRC emacs-lisp
   (display-time-mode t)           ;; Display time in modeline
   (column-number-mode t)          ;; Display column number in modeline
-  ;; (global-linum-mode t)           ;; Enable line numbers everywhere
   (electric-pair-mode t)          ;; Color pairs (parens, brackets etc) when typing
   (setq-default line-spacing 3)   ;; Set spacing between lines
 #+END_SRC
@@ -66,6 +71,7 @@ I use =secrets.el= to store variables I don't want to put on Github
   (custom-theme-set-faces
    'user
    '(variable-pitch ((t (:family "Roboto" :height 120))))
+   '(default ((t (:family "SF Mono" :height 110))))
    '(fixed-pitch ((t (:family "SF Mono" :height 110)))))
 #+END_SRC
 
@@ -73,12 +79,12 @@ I use =secrets.el= to store variables I don't want to put on Github
 
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons
-    :ensure t)
-
-  (use-package all-the-icons-ivy
     :ensure t
     :config
-    (all-the-icons-ivy-setup))
+    (use-package all-the-icons-ivy
+      :ensure t
+      :config
+      (all-the-icons-ivy-setup)))
 #+END_SRC
 
 ** Start Emacs maximized
@@ -107,16 +113,6 @@ The =doom-one= theme looks good.
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-** Smooth Scrolling
-
-By default, Emacs scrolls by half a screen when we move off the edge. Change that to move one line at a time.
-
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package smooth-scrolling
-    ;; :ensure t)
-  ;; (smooth-scrolling-mode t)
-#+END_SRC
-
 ** Relative line numbering
 
 In vim, I bind =<leader> r= (i.e. =, r=) to switch to relative line numbering in the current buffer. Enable similar functionality for Emacs.
@@ -126,14 +122,12 @@ In vim, I bind =<leader> r= (i.e. =, r=) to switch to relative line numbering in
     :ensure t
     :config
     (linum-relative-off))
-    ;; (linum-on))
   (require 'linum-relative)
 
   ;; Define a function to toggle relative line numbers
   (defun my/linum-relative-toggle ()
     (interactive)
     (linum-relative-toggle))
-    ;; (linum-on))
 #+END_SRC
 
 ** =evil-mode= for Vim emulation
@@ -182,32 +176,14 @@ Frankly speaking, Vim is a much better text editor than Emacs. We can capture so
 =counsel= goes one step further to replace standard commands with ones which make best use of =ivy=.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package counsel
-    :ensure t)
+  (use-package counsel :ensure t)
   (counsel-mode t)
 #+END_SRC
 
 Enable =swiper= for searching.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package swiper
-    :ensure t)
-#+END_SRC
-
-** =treemacs= for tree view
-
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs
-    :ensure t)
-
-  (use-package treemacs-evil
-    :ensure t)
-
-  (use-package treemacs-projectile
-    :ensure t)
-
-  (use-package treemacs-magit
-    :ensure t)
+  (use-package swiper :ensure t)
 #+END_SRC
 
 ** Delete trailing whitespace on save
@@ -226,8 +202,7 @@ Enable =swiper= for searching.
 ** Use =magit= for git
 
 #+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t)
+  (use-package magit :ensure t)
 #+END_SRC
 
 * Programming
@@ -272,8 +247,7 @@ Company stands for "COMPlete ANYthing", and is an extensible completion framewor
 Flycheck is a syntax checker/linter with multiple backends.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :ensure t)
+  (use-package flycheck :ensure t)
 #+END_SRC
 
 ** Snippets with =yasnippet=
@@ -307,8 +281,7 @@ Flycheck is a syntax checker/linter with multiple backends.
 Use =counsel= front-end for projectile
 
 #+BEGIN_SRC emacs-lisp
-  (use-package counsel-projectile
-    :ensure t)
+  (use-package counsel-projectile :ensure t)
   (counsel-projectile-mode t)
 #+END_SRC
 
@@ -350,7 +323,7 @@ C indentation is really messed up in Emacs by default
             (lambda ()
               (progn
                 (setq c-basic-offset 8)
-                (setq c-default-style "java")
+                (setq c-default-style "linux")
                 (setq tab-width 8)
                 (setq indent-tabs-mode t)
                 (lsp))))
@@ -361,8 +334,7 @@ C indentation is really messed up in Emacs by default
 Rust is not supported out of the box. Install =rust-mode= to enable support
 
 #+BEGIN_SRC emacs-lisp
-  (use-package rust-mode
-    :ensure t)
+  (use-package rust-mode :ensure t)
 #+END_SRC
 
 On entering Rust mode, enable indentation with 4 spaces, and enable [[Language server protocol][lsp]] support with =rls=
@@ -403,8 +375,7 @@ On entering Python mode, enable indentation with 4 spaces, and enable [[Language
 CMake is not supported out of the box. Install =cmake-mode= to enable support
 
 #+BEGIN_SRC emacs-lisp
-  (use-package cmake-mode
-    :ensure t)
+  (use-package cmake-mode :ensure t)
 #+END_SRC
 
 *** Markdown
@@ -433,7 +404,7 @@ My configuration for org mode
 Hide emphasis markers ('*' for bold, '/' for italics)
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-hide-emphasis-markers t)
+  ;; (setq org-hide-emphasis-markers t)
 #+END_SRC
 
 Indent to different levels
@@ -469,31 +440,35 @@ Customize faces for org mode elements. We are going to be switching to a variabl
    '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
 #+END_SRC
 
-Set different font sizes for different header levels
-
-#+BEGIN_SRC emacs-lisp
-  (let* ((base-font-color (face-foreground 'default nil 'default))
-         (headline `(:inherit default :weight bold :foreground ,base-font-color)))
-    (custom-theme-set-faces
-     'user
-     `(org-document-title ((t (,@headline :height 2.0))))
-     `(org-level-1 ((t (,@headline :height 1.75))))
-     `(org-level-2 ((t (,@headline :height 1.5))))
-     `(org-level-3 ((t (,@headline :height 1.25))))
-     `(org-level-4 ((t (,@headline :height 1.1))))
-     `(org-level-5 ((t (,@headline :height 1.0))))
-     `(org-level-6 ((t (,@headline :height 1.0))))
-     `(org-level-7 ((t (,@headline :height 1.0))))
-     `(org-level-8 ((t (,@headline :height 1.0))))))
-#+END_SRC
-
 Use a variable width font for org mode buffers. Also enable =visual-line-mode=, since this adjusts long lines better.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'text-mode-hook
+  (add-hook 'org-mode-hook
 	    (lambda ()
 	      (variable-pitch-mode t)
 	      (visual-line-mode t)))
+#+END_SRC
+
+** Drawers
+
+=LOGBOOK= drawer for storing state changes
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-into-drawer "LOGBOOK")
+#+END_SRC
+
+** Configure TODO states
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(g@/!)" "|" "DONE(d!)" "POSTPONED(p@/!)" "CANCELLED(c@/!)")))
+
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:inherit default :weight bold :foreground "#de3832"))
+          ("DOING" . (:inherit default :weight bold :foreground "#edcb00"))
+          ("DONE" . (:inherit default :weight bold :foreground "#54c033"))
+          ("POSTPONED" . (:inherit font-lock-comment-face))
+          ("CANCELLED" . (:inherit font-lock-comment-face))))
 #+END_SRC
 
 * [META] - byte-compile config
@@ -514,11 +489,10 @@ Use a variable width font for org mode buffers. Also enable =visual-line-mode=, 
 I'm trying out =general.el= to manage my key bindings. In *normal mode*, I bind =SPC= as prefix. In non-normal (insert) modes, use =M-SPC= as prefix.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package general
-    :ensure t)
+  (use-package general :ensure t)
 #+END_SRC
 
-Top-level keybindings
+** Top-level keybindings
 
 #+BEGIN_SRC emacs-lisp
   (general-define-key
@@ -535,24 +509,23 @@ Top-level keybindings
     "[" '(previous-buffer :which-key "prev buf")                 ;; Switch to prev buffer
     "]" '(next-buffer :which-key "next buf")                     ;; Switch to next buffer
     "B" '(counsel-bookmark :which-key "bookmark")                ;; Create/switch to bookmark
+
     ;; Projectile stuff
     "pp" '(counsel-projectile-switch-project :which-key "project")
     "pf" '(counsel-projectile-find-file :which-key "file")
     "pa" '(projectile-add-known-project :which-key "add")
+
     ;; Searching with Swiper
     "s" '(swiper-isearch :which-key "isearch")
     "S" '(swiper-isearch-thing-at-point :which-key "isearch at point")
+
+    ;; Globally-available org-mode commands
+    "oa" '(org-agenda :which-key "org agenda")
+    "oc" '(org-capture :which-key "org capture")
+    "ol" '(org-store-link :which-key "org store link")
+
     ;; Byte-compile config
     "mecc" '(my/extract-and-compile-config :which-key "compile config")
-   )
-#+END_SRC
-
-** Treemacs key-bindings
-
-#+BEGIN_SRC emacs-lisp
-  (general-define-key
-   :prefix "C-c"
-   "t" '(treemacs :which-key "treemacs") ;; Toggle treemacs
    )
 #+END_SRC
 
@@ -587,18 +560,16 @@ Keybindings for Rust
 
 ** Org-mode keybindings
 
+Keybindings for org mode
+
 #+BEGIN_SRC emacs-lisp
   (general-define-key
    :states 'normal
    :keymaps 'org-mode-map
    :prefix "SPC"
-   "a" '(org-agenda :which-key "agenda")  ;; Open org agenda
+   "ot" '(org-set-tags :which-key "set tags")
    )
 #+END_SRC
-
-That's all, folks!
-
-(buf)
 
 * Configure the mode line
 ** file-type icon
@@ -684,36 +655,40 @@ That's all, folks!
 
 #+BEGIN_SRC emacs-lisp
   (defun my/modeline-projectile-project ()
-    (propertize (projectile-project-name) 'font-lock-face '(:weight bold)))
+    (if (boundp 'projectile-project-name)
+        (propertize (projectile-project-name) 'font-lock-face '(:weight bold))
+      ""))
 #+END_SRC
 
 ** git
 
 #+BEGIN_SRC emacs-lisp
   (defun my/modeline-git-info ()
-    (let ((branch (magit-get-current-branch)))
-      (if branch
-	  (if (or (magit-untracked-files) (magit-anything-unstaged-p))
-	      (concat
-	       (propertize
-		(all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-red)
-		'display '(raise 0.0))
-	       " "
-	       (propertize branch 'font-lock-face '(:weight bold :foreground "#eb595a")))
-	    (if (magit-anything-modified-p)
-		(concat
-		 (propertize
-		  (all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-yellow)
-		  'display '(raise 0.0))
-		 " "
-		 (propertize branch 'font-lock-face '(:weight bold :foreground "#ffd446")))
-	      (concat
-	       (propertize
-		(all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-green)
-		'display '(raise 0.0))
-	       " "
-	       (propertize branch 'font-lock-face '(:weight bold :foreground "#90a959")))))
-	"")))
+    (if (boundp 'magit-get-current-branch)
+        (let ((branch (magit-get-current-branch)))
+          (if branch
+              (if (or (magit-untracked-files) (magit-anything-unstaged-p))
+                  (concat
+                   (propertize
+                    (all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-red)
+                    'display '(raise 0.0))
+                   " "
+                   (propertize branch 'font-lock-face '(:weight bold :foreground "#eb595a")))
+                (if (magit-anything-modified-p)
+                    (concat
+                     (propertize
+                      (all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-yellow)
+                      'display '(raise 0.0))
+                     " "
+                     (propertize branch 'font-lock-face '(:weight bold :foreground "#ffd446")))
+                  (concat
+                   (propertize
+                    (all-the-icons-faicon "code-fork" :height 0.9 :face 'all-the-icons-green)
+                    'display '(raise 0.0))
+                   " "
+                   (propertize branch 'font-lock-face '(:weight bold :foreground "#90a959")))))
+            ""))
+      ""))
 #+END_SRC
 
 ** Time
