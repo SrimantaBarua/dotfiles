@@ -1,0 +1,2 @@
+MKDIR ~/.config
+SYMLINK i3 , ~/.config/i3

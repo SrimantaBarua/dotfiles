@@ -1,9 +1,12 @@
 INCLUDE bash
+INCLUDE compton
+INCLUDE dunst
 INCLUDE emacs
 INCLUDE fontconfig
 INCLUDE gdb
 INCLUDE git
 INCLUDE gtk
+INCLUDE i3
 INCLUDE kitty
 INCLUDE nvim
 INCLUDE redshift

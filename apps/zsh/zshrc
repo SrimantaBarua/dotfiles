@@ -28,7 +28,7 @@ zstyle :compinstall filename '/home/barua/.zshrc'
 autoload -Uz compinit
 compinit
 # Syntax highlighting
-source /usr/share/zsh/site-contrib/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Searching history
 bindkey "" history-incremental-pattern-search-backward
 # enable vim mode
