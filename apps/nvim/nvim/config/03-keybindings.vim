@@ -4,7 +4,7 @@ let mapleader=','
 
 " Interface
 nnoremap <leader>rl :setlocal relativenumber!<cr>
-nnoremap <leader>nu :setlocal number!<cr>
+nnoremap <leader>ll :setlocal number!<cr>
 
 " Fast buffer switching
 nnoremap <leader><leader> :b#<cr>

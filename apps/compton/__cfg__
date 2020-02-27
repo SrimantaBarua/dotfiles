@@ -1,2 +1,0 @@
-MKDIR ~/.config
-SYMLINK compton.conf , ~/.config/compton.conf

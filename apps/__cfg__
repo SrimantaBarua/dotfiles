@@ -1,5 +1,4 @@
 INCLUDE bash
-INCLUDE compton
 INCLUDE dunst
 INCLUDE emacs
 INCLUDE fontconfig
@@ -9,6 +8,7 @@ INCLUDE gtk
 INCLUDE i3
 INCLUDE kitty
 INCLUDE nvim
+INCLUDE picom
 INCLUDE redshift
 INCLUDE tmux
 INCLUDE transmission

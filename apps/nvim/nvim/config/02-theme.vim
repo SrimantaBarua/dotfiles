@@ -9,13 +9,11 @@ set background=dark
 
 " colorscheme apprentice
 
-let ayucolor="dark"
-colorscheme ayu
+" let ayucolor="dark"
+" let ayucolor="mirage"
+" colorscheme ayu
 
-" colorscheme base16-solarized-light
-" colorscheme base16-gruvbox-dark-hard
-" colorscheme base16-default-dark
-" colorscheme base16-3024
+colorscheme base16-classic-dark
 
 " Statusline
 set laststatus=2

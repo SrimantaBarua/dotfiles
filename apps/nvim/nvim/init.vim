@@ -14,7 +14,6 @@ set showcmd
 set wildmenu
 set autoindent
 set smartindent
-set lazyredraw
 set hlsearch
 set incsearch
 set cursorline

@@ -50,7 +50,7 @@ bindsym Print        exec $screenshot
 
 # ---- Dmenu --------
 
-bindsym $mod+d exec i3-dmenu-desktop --dmenu="dmenu -i -fn 'Noto Sans:size=8'"
+bindsym $mod+d exec i3-dmenu-desktop --dmenu="dmenu -l 15 -i -fn 'Roboto:size=7'"
 
 
 # ---- Change window focus --------
@@ -99,16 +99,25 @@ bindsym $alt+minus split v
 set $refresh_i3status killall -SIGUSR1 i3status
 set $volume_cmd       pactl set-sink-volume @DEFAULT_SINK@
 set $mute_cmd         pactl set-sink-mute @DEFAULT_SINK@ toggle
+
 bindsym XF86AudioRaiseVolume exec --no-startup-id $volume_cmd +10% && $refresh_i3status
 bindsym XF86AudioLowerVolume exec --no-startup-id $volume_cmd -10% && $refresh_i3status
 bindsym XF86AudioMute        exec --no-startup-id $mute_cmd && $refresh_i3status
 
 
+# ---- Brightness --------
+
+bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -5%
+
+
 # ---- kill focused window --------
+
 bindsym $alt+Shift+q kill
 
 
 # ---- switch to workspace --------
+
 bindsym $alt+1 workspace number $ws1
 bindsym $alt+2 workspace number $ws2
 bindsym $alt+3 workspace number $ws3
@@ -122,6 +131,7 @@ bindsym $alt+0 workspace number $ws10
 
 
 # ---- move focused container to workspace --------
+
 bindsym $alt+Shift+1 move container to workspace number $ws1
 bindsym $alt+Shift+2 move container to workspace number $ws2
 bindsym $alt+Shift+3 move container to workspace number $ws3
@@ -134,61 +144,66 @@ bindsym $alt+Shift+9 move container to workspace number $ws9
 bindsym $alt+Shift+0 move container to workspace number $ws10
 
 
-# ---- reload/restart/exit --------
+# ---- resize/reload/restart/exit --------
 
 bindsym $alt+Shift+c reload
 bindsym $alt+Shift+r restart
-bindsym $alt+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $alt+Shift+e mode "exit: [l]ogout, [r]eboot, [s]hutdown"
+bindsym $alt+r       mode "resize"
+
+
+# ---- Exit --------
+
+mode "exit: [l]ogout, [r]eboot, [s]hutdown" {
+	bindsym l exec i3-msg exit
+	bindsym r exec systemctl reboot
+	bindsym s exec systemctl shutdown
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
 
 
 # ---- Resze --------
 
-# resize window (you can also use the mouse for that)
 mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
-
         # Pressing left will shrink the window’s width.
         # Pressing right will grow the window’s width.
         # Pressing up will shrink the window’s height.
         # Pressing down will grow the window’s height.
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym semicolon resize grow width 10 px or 10 ppt
-
-        # same bindings, but for the arrow keys
-        bindsym Left resize shrink width 10 px or 10 ppt
-        bindsym Down resize grow height 10 px or 10 ppt
-        bindsym Up resize shrink height 10 px or 10 ppt
-        bindsym Right resize grow width 10 px or 10 ppt
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
 
         # back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
         bindsym Escape mode "default"
-        bindsym $mod+r mode "default"
+        bindsym $alt+r mode "default"
 }
-
-bindsym $mod+r mode "resize"
 
 
 # ---- Window rules --------
 
-for_window [class="^.*"] border pixel 1
+for_window [class="^.*"] border pixel 0
 
 
 # ---- Bar --------
 
 bar {
-	colors {
-		background #2f343f
-		statusline #2f343f
-		separator #4b5262
+	font           pango:Roboto, Font Awesome 6
+	position       top
+        status_command i3status-rs ~/.config/i3/status-rust.toml
 
-		# colour of border, background, and text
-		focused_workspace       #2f343f #bf616a #d8dee8
-		active_workspace        #2f343f #2f343f #d8dee8
-		inactive_workspace      #2f343f #2f343f #d8dee8
-		urgent_workspacei       #2f343f #ebcb8b #2f343f
-	}
-        status_command i3status
+	# colors {
+		# background #2f343f
+		# statusline #2f343f
+		# separator #4b5262
+#
+		# # colour of border, background, and text
+		# focused_workspace       #2f343f #bf616a #d8dee8
+		# active_workspace        #2f343f #2f343f #d8dee8
+		# inactive_workspace      #2f343f #2f343f #d8dee8
+		# urgent_workspacei       #2f343f #ebcb8b #2f343f
+	# }
 }

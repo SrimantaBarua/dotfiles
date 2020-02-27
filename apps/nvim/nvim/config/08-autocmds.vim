@@ -21,3 +21,11 @@ augroup filetype_indent
 	autocmd FileType tex,css,html,xml setlocal shiftwidth=2
 	autocmd FileType tex,css,html,xml setlocal expandtab
 augroup END
+
+
+" Keybindings for filetypes
+augroup filetype_keybind
+	autocmd!
+	" Rust
+	autocmd FileType rust nnoremap <buffer> <leader>lf :RustFmt<cr>
+augroup END

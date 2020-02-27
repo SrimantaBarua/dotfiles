@@ -70,9 +70,9 @@ I use =secrets.el= to store variables I don't want to put on Github
 #+BEGIN_SRC emacs-lisp
   (custom-theme-set-faces
    'user
-   '(variable-pitch ((t (:family "Roboto" :height 120))))
-   '(default ((t (:family "SF Mono" :height 110))))
-   '(fixed-pitch ((t (:family "SF Mono" :height 110)))))
+   '(variable-pitch ((t (:family "Roboto" :height 70))))
+   '(default ((t (:family "SF Mono" :height 70))))
+   '(fixed-pitch ((t (:family "SF Mono" :height 70)))))
 #+END_SRC
 
 ** Install icons

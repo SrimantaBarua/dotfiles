@@ -42,6 +42,7 @@ Plug 'honza/vim-snippets'
 " Plug 'srcery-colors/srcery-vim'
 " Plug 'romainl/Apprentice'
 Plug 'ayu-theme/ayu-vim'
+Plug 'chriskempson/base16-vim'
 
 
 " -------- Markdown live preview ----------------
