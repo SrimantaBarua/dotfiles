@@ -15,10 +15,13 @@ set $emacs_gui    "emacs"
 set $file_manager "thunar"
 
 # Screenshots
-set $screenshot   "scrot ~/Pictures/Screenshots/%b%d::%H%M%S.png"
+set $screenshot   "scrot ~/Pictures/Screenshots/%Y-%b-%d_%H:%M:%S.png"
 
-# Use Mouse+$mod to drag floating windows to their wanted position
-floating_modifier $mod
+# Lockscreen
+set $lock "~/.config/i3/i3lock.sh"
+
+# Use Mouse+$alt to drag floating windows to their wanted position
+floating_modifier $alt
 
 # Workspace names
 set $ws1 "1"
@@ -35,22 +38,34 @@ set $ws10 "10"
 
 # ==== Autostart ========
 
+exec --no-startup-id xss-lock -- $lock
+
 
 # ==== Keybindings ========
 
 # ---- Applications --------
 
-bindsym $mod+Return exec $terminal
-bindsym $mod+w      exec $browser
-bindsym $mod+e      exec $emacs_gui
-bindsym $mod+f      exec $file_manager
+bindsym $alt+Return exec $terminal
+#bindsym $alt+w      exec $browser
+#bindsym $alt+e      exec $emacs_gui
+#bindsym $alt+f      exec $file_manager
 
 bindsym Print        exec $screenshot
 
 
 # ---- Dmenu --------
 
-bindsym $mod+d exec i3-dmenu-desktop --dmenu="dmenu -l 15 -i -fn 'Roboto:size=7'"
+# bindsym $alt+d exec i3-dmenu-desktop --dmenu="dmenu -l 15 -i -fn 'Roboto:size=7'"
+
+
+# ---- Lock screen --------
+
+bindsym $mod+l exec $lock
+
+
+# --- Rofi --------
+
+bindsym $alt+d exec rofi -show combi
 
 
 # ---- Change window focus --------
@@ -61,7 +76,7 @@ bindsym $alt+k focus up
 bindsym $alt+l focus right
 
 # Focus parent container
-# bindsym $mod+a focus parent
+# bindsym $alt+a focus parent
 
 # change focus between tiling / floating windows
 bindsym $alt+space focus mode_toggle
@@ -100,8 +115,8 @@ set $refresh_i3status killall -SIGUSR1 i3status
 set $volume_cmd       pactl set-sink-volume @DEFAULT_SINK@
 set $mute_cmd         pactl set-sink-mute @DEFAULT_SINK@ toggle
 
-bindsym XF86AudioRaiseVolume exec --no-startup-id $volume_cmd +10% && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id $volume_cmd -10% && $refresh_i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id $volume_cmd +5% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id $volume_cmd -5% && $refresh_i3status
 bindsym XF86AudioMute        exec --no-startup-id $mute_cmd && $refresh_i3status
 
 
@@ -171,10 +186,10 @@ mode "resize" {
         # Pressing right will grow the window’s width.
         # Pressing up will shrink the window’s height.
         # Pressing down will grow the window’s height.
-        bindsym h resize shrink width 10 px or 10 ppt
-        bindsym j resize grow height 10 px or 10 ppt
-        bindsym k resize shrink height 10 px or 10 ppt
-        bindsym l resize grow width 10 px or 10 ppt
+        bindsym h resize shrink width 5 px or 5 ppt
+        bindsym j resize grow height 5 px or 5 ppt
+        bindsym k resize shrink height 5 px or 5 ppt
+        bindsym l resize grow width 5 px or 5 ppt
 
         # back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
@@ -187,23 +202,30 @@ mode "resize" {
 
 for_window [class="^.*"] border pixel 0
 
+# Virtualbox
+# for_window [class="VirtualBox Manager"] floating enable
+for_window [class="VirtualBox Machine"] floating enable
+
 
 # ---- Bar --------
 
 bar {
 	font           pango:Roboto, Font Awesome 6
 	position       top
+	mode           hide
+	hidden_state   hide
+	modifier       $mod
+
         status_command i3status-rs ~/.config/i3/status-rust.toml
 
-	# colors {
-		# background #2f343f
+	colors {
+		background #212733
 		# statusline #2f343f
 		# separator #4b5262
-#
 		# # colour of border, background, and text
-		# focused_workspace       #2f343f #bf616a #d8dee8
-		# active_workspace        #2f343f #2f343f #d8dee8
-		# inactive_workspace      #2f343f #2f343f #d8dee8
-		# urgent_workspacei       #2f343f #ebcb8b #2f343f
-	# }
+		focused_workspace       #2f343f #bf616a #d8dee8
+		active_workspace        #2f343f #2f343f #d8dee8
+		inactive_workspace      #2f343f #2f343f #d8dee8
+		urgent_workspacei       #2f343f #ebcb8b #2f343f
+	}
 }

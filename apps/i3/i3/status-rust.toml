@@ -7,11 +7,6 @@ block = "backlight"
 
 
 [[block]]
-block = "bluetooth"
-mac = "30:C0:1B:6E:E4:D9"
-
-
-[[block]]
 block = "battery"
 driver = "upower"
 format = "{percentage}% {time}"

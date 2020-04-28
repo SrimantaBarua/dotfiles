@@ -1,0 +1,2 @@
+MKDIR ~/.config
+SYMLINK rofi , ~/.config/rofi

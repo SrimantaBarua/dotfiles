@@ -107,6 +107,12 @@ The =doom-one= theme looks good.
 #+END_SRC
 
 * UX Configuration
+** Use X clipboard
+
+#+BEGIN_SRC emacs-lisp
+  (setq x-select-enable-clipboard t)
+#+END_SRC
+
 ** Don't want to keep typing "yes" or "no"
 
 #+BEGIN_SRC emacs-lisp

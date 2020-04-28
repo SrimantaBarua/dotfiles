@@ -44,7 +44,7 @@ alias tree='tree -C'
 
 
 # Fzf configuration
-export FZF_DEFAULT_OPTS='--color bg:-1,fg:-1,hl:#96aa30,bg+:#20252A,fg+:#ffffff,hl+:#F29718,info:#768B90,prompt:#F07178 -m'
+export FZF_DEFAULT_OPTS='--color bg:-1,fg:-1,hl:#96aa30,bg+:#20252A,fg+:#ffffff,hl+:#F29718,info:#768B90,prompt:#F07178 -m --layout=reverse'
 export FZF_DEFAULT_COMMAND='rg --files'
 
 

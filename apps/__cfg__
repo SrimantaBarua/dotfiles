@@ -10,6 +10,7 @@ INCLUDE kitty
 INCLUDE nvim
 INCLUDE picom
 INCLUDE redshift
+INCLUDE rofi
 INCLUDE tmux
 INCLUDE transmission
 INCLUDE zsh
