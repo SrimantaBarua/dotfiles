@@ -142,37 +142,6 @@ endfunction
 
 " }}}
 
-" Run in floating term {{{
-
-function! FloatTerm(...)
-  let buf = nvim_create_buf(v:false, v:true)
-  call setbufvar(buf, '&signcolumn', 'no')
- 
-  let height = float2nr(&lines * 3 / 4)
-  let width = float2nr(&columns * 3 / 4)
-  let horizontal = float2nr(&columns / 8)
-  let vertical = float2nr(&lines / 8)
- 
-  let opts = {
-        \ 'relative': 'editor',
-        \ 'row': vertical,
-        \ 'col': horizontal,
-        \ 'width': width,
-        \ 'height': height,
-        \ 'style': 'minimal'
-        \ }
- 
-  let s:win = nvim_open_win(buf, v:true, opts)
-  if a:0 == 0
-      terminal
-  else
-      call termopen(a:1)
-  endif
-  startinsert
-endfunction
-
-" }}}
-
 " }}}
 
 " plugin config {{{
@@ -315,17 +284,19 @@ augroup END
 
 " keybindings for filetypes {{{
 
+lua require("float_term")
+
 augroup filetype_keybind
     autocmd!
     " Rust
     autocmd FileType rust nnoremap <buffer> <leader>lf :RustFmt<cr>
-    autocmd FileType rust nnoremap <buffer> <leader>C :call FloatTerm("cargo build")<cr>
-    autocmd FileType rust nnoremap <buffer> <leader>R :call FloatTerm("cargo run")<cr>
-    autocmd FileType rust nnoremap <buffer> <leader>T :call FloatTerm("cargo test")<cr>
+    autocmd FileType rust nnoremap <buffer> <leader>C :lua FloatTerm("cargo build")<cr>
+    autocmd FileType rust nnoremap <buffer> <leader>R :lua FloatTerm("cargo run")<cr>
+    autocmd FileType rust nnoremap <buffer> <leader>T :lua FloatTerm("cargo test")<cr>
 
     " C++
-    autocmd FileType cpp nnoremap <buffer> <leader>C :call FloatTerm("g++ " . expand("%:p") . " -o " . expand("%:p:r"))<cr>
-    autocmd FileType cpp nnoremap <buffer> <leader>R :call FloatTerm("g++ " . expand("%:p") . " -o " . expand("%:p:r") . " && " . expand("%:p:r"))<cr>
+    autocmd FileType cpp nnoremap <buffer> <leader>C :lua FloatTerm("g++ " . expand("%:p") . " -o " . expand("%:p:r"))<cr>
+    autocmd FileType cpp nnoremap <buffer> <leader>R :lua FloatTerm("g++ " . expand("%:p") . " -o " . expand("%:p:r") . " && " . expand("%:p:r"))<cr>
 augroup END
 
 " }}}
@@ -360,7 +331,7 @@ nnoremap <leader>rl :setlocal relativenumber!<cr>
 nnoremap <leader>ll :setlocal number!<cr>
 
 " open floating terminal
-nnoremap <leader>tt :call FloatTerm()<cr>
+nnoremap <leader>tt :lua FloatTerm({"/bin/zsh"})<cr>
 
 " }}}
 
