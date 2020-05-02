@@ -115,6 +115,10 @@ colorscheme ayu
 " open man pages inside neovim
 runtime ftplugin/man.vim
 
+" Load lua code
+lua require("float_term")
+" lua require("project")
+
 " custom code {{{
 
 " floating fzf {{{
@@ -248,6 +252,13 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 
 " autocmds {{{
 
+" lua initialize project information
+
+" augroup lua_project
+    " autocmd!
+    " autocmd BufRead,BufNewFile :lua project.new_buffer()
+" augroup end
+
 " override filetype and syntax for file extensions {{{
 
 augroup filetype_syntax
@@ -284,19 +295,17 @@ augroup END
 
 " keybindings for filetypes {{{
 
-lua require("float_term")
-
 augroup filetype_keybind
     autocmd!
     " Rust
     autocmd FileType rust nnoremap <buffer> <leader>lf :RustFmt<cr>
-    autocmd FileType rust nnoremap <buffer> <leader>C :lua FloatTerm("cargo build")<cr>
-    autocmd FileType rust nnoremap <buffer> <leader>R :lua FloatTerm("cargo run")<cr>
-    autocmd FileType rust nnoremap <buffer> <leader>T :lua FloatTerm("cargo test")<cr>
+    autocmd FileType rust nnoremap <buffer> <leader>C :lua float_term("cargo build")<cr>
+    autocmd FileType rust nnoremap <buffer> <leader>R :lua float_term("cargo run")<cr>
+    autocmd FileType rust nnoremap <buffer> <leader>T :lua float_term("cargo test")<cr>
 
     " C++
-    autocmd FileType cpp nnoremap <buffer> <leader>C :lua FloatTerm("g++ " . expand("%:p") . " -o " . expand("%:p:r"))<cr>
-    autocmd FileType cpp nnoremap <buffer> <leader>R :lua FloatTerm("g++ " . expand("%:p") . " -o " . expand("%:p:r") . " && " . expand("%:p:r"))<cr>
+    autocmd FileType cpp nnoremap <buffer> <leader>C :lua float_term("g++", expand("%:p"), "-o", expand("%:p:r"))<cr>
+    autocmd FileType cpp nnoremap <buffer> <leader>R :lua float_term("g++", expand("%:p"), "-o", expand("%:p:r"), ";", expand("%:p:r"))<cr>
 augroup END
 
 " }}}
@@ -331,7 +340,7 @@ nnoremap <leader>rl :setlocal relativenumber!<cr>
 nnoremap <leader>ll :setlocal number!<cr>
 
 " open floating terminal
-nnoremap <leader>tt :lua FloatTerm({"/bin/zsh"})<cr>
+nnoremap <leader>tt :lua float_term("/bin/zsh")<cr>
 
 " }}}
 

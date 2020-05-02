@@ -1,6 +1,6 @@
 -- Function to create a floating terminal and run the provided command
 
-function FloatTerm(cmd)
+function float_term(...)
     -- get neovim window dimensions
     local height = vim.api.nvim_get_option("lines")
     local width = vim.api.nvim_get_option("columns")
@@ -20,6 +20,7 @@ function FloatTerm(cmd)
 
     -- settings for the window
     local opts = {
+        style = "minimal",
         relative = "editor",
         width = win_width,
         height = win_height,
@@ -29,6 +30,6 @@ function FloatTerm(cmd)
 
     -- create a new window and run command
     local win = vim.api.nvim_open_win(buf, true, opts)
-    vim.api.nvim_call_function("termopen", cmd)
+    vim.api.nvim_call_function("termopen", {...})
     vim.api.nvim_command(":startinsert")
 end
